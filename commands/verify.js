@@ -234,7 +234,7 @@ module.exports = {
           );
           //keeping verify clean
           for(var i =0; i< info.length; i++){
-            
+            console.log(info[i].id);
             
             
           }
