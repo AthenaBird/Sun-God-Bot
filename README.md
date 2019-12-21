@@ -1,25 +1,8 @@
-# Welcome to Glitch
+# Sun God Bot
 
-Click `Show` in the header to see your app live. Updates to your code will instantly deploy and update live.
+Sun God Bot is a utility orientated Discord.js bot mostly used in the UCSD 22 Discord server to handle the badge process and the verification process. 
 
-**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
-
-Find out more [about Glitch](https://glitch.com/about).
-
-## Your Project
-
-On the front-end,
-
-- edit `public/client.js`, `public/style.css` and `views/index.html`
-- drag in `assets`, like images or music, to add them to your project
-
-On the back-end,
-
-- your app starts at `server.js`
-- add frameworks and packages in `package.json`
-- safely store app secrets in `.env` (nobody can see this but you and people you invite)
-
-## Made by [Glitch](https://glitch.com/)
+## Hosted by [Glitch](https://glitch.com/)
 
 \ ゜ o ゜)ノ
 
@@ -27,8 +10,7 @@ On the back-end,
 
 ## Main Functionality
 
-The main purpose of Sun God Bot is to be praised and provide a welcoming environment for the citizens of UCSD 22 Discord server.
-The prefix for all commands is `sg!`
+The prefix for all commands is `sg!`. 
 
 ## Badges
 
