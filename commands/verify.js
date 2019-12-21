@@ -235,10 +235,10 @@ module.exports = {
           //keeping verify clean
           for(var i =0; i< info.length; i++){
             console.log(info[i].id);
-            
+            info[i].id.delete(5)
             
           }
-          client.channels.get("425873171431030786").send("***🎉🎉Welcome <@" + user.id + "> to this server!🎉🎉*** Please check out #roles to get roles and create a profile in #profiles!");
+          //client.channels.get("425873171431030786").send("***🎉🎉Welcome <@" + user.id + "> to this server!🎉🎉*** Please check out #roles to get roles and create a profile in #profiles!");
           
         }
       }
