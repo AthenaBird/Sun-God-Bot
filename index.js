@@ -1,26 +1,37 @@
+const Discord = require("discord.js");
+const badges_json = require("./badges.json");
+const config = require("./config.json");
+const Enmap = require("enmap");
+const fs = require("fs");
+const SQLite = require("better-sqlite3");
+const sql_score = new SQLite("./databases/scores.sqlite");
+const sql = new SQLite("./databases/badges.sqlite");
+const sql_emblems = new SQLite("./databases/emblems.sqlite");
 const http = require("http");
 const express = require("express");
 const app = express();
-const Discord = require("discord.js");
-const client = new Discord.Client();
-const config = require("./config.json");
-const SQLite = require("better-sqlite3");
-const sql = new SQLite("./rps.sqlite");
-const fs = require('fs');
 
+const POINT_SUBTRACT = 1;
+const POINT_BASE = 10;
+const POINT_MIN = 1;
+const STREAK_MAX = 5;
+
+const client = new Discord.Client();
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs
+  .readdirSync("./commands")
+  .filter(file => file.endsWith(".js"));
+
 
 for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
+  const command = require(`./commands/${file}`);
 
-	// set a new item in the Collection
-	// with the key as the command name and the value as the exported module
-	client.commands.set(command.name, command);
+  // set a new item in the Collection
+  // with the key as the command name and the value as the exported module
+  client.commands.set(command.name, command);
 }
 
-var bToggle = false;
-
+//Ping thyself
 app.get("/", (request, response) => {
   console.log(Date.now() + " Ping Received");
   response.sendStatus(200);
@@ -30,41 +41,198 @@ setInterval(() => {
   http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
 }, 280000);
 
-client.once("ready", () => {
-  console.log("Ready!");
+client.on("ready", () => {
+  //set activity
+  client.user.setActivity("sg!help", { type: "LISTENING" });
+
   const table = sql
     .prepare(
-      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'rps';"
+      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'badges';"
     )
     .get();
   if (!table["count(*)"]) {
     // If the table isn't there, create it and setup the database correctly.
     sql
       .prepare(
-        "CREATE TABLE rps (id TEXT PRIMARY KEY, user TEXT, guild TEXT, score INTEGER);"
+        "CREATE TABLE badges (id TEXT PRIMARY KEY, user TEXT, guild TEXT);"
       )
       .run();
     // Ensure that the "id" row is always unique and indexed.
-    sql.prepare("CREATE UNIQUE INDEX idx_rps_id ON rps (id);").run();
+    sql.prepare("CREATE UNIQUE INDEX idx_badges_id ON badges (id);").run();
     sql.pragma("synchronous = 1");
     sql.pragma("journal_mode = wal");
   }
 
-  // And then we have two prepared statements to get and set the score data.
-  client.getScore = sql.prepare(
-    "SELECT * FROM rps WHERE user = ? AND guild = ?"
-  );
-  client.setScore = sql.prepare(
-    "INSERT OR REPLACE INTO rps (id, user, guild, score) VALUES (@id, @user, @guild, @score);"
-  );
+  //Auto adds the badges as columns
+  const keys = Object.keys(badges_json);
+  for (var i = 0; i < keys.length; ++i) {
+    try {
+      var sql_badge_add = `ALTER TABLE badges ADD COLUMN ${keys[i]} INT;`;
+      sql.prepare(sql_badge_add).run();
+    } catch (err) {}
+  }
 
-  client.user.setActivity("the demise of Sun God Bot", { type: "WATCHING" });
+  // And then we have two prepared statements to get and set the score data
+  let statement = "SELECT * FROM badges WHERE user = ? AND guild = ?";
+  client.getBadge = sql.prepare(statement);
+  client.setBadge = sql.prepare(
+    "INSERT OR REPLACE INTO badges (id, user, guild) VALUES (@id, @user, @guild);"
+  );
+  
+  const score_table = sql_score.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'scores';").get();
+  if (!score_table['count(*)']) {
+    // If the table isn't there, create it and setup the database correctly.
+    sql_score.prepare("CREATE TABLE scores (id TEXT PRIMARY KEY, user TEXT, guild TEXT, points INTEGER, level INTEGER, last_msg BIGINT, streak INTEGER, prev_points INTEGER);").run();
+    // Ensure that the "id" row is always unique and indexed.
+    sql_score.prepare("CREATE UNIQUE INDEX idx_scores_id ON scores (id);").run();
+    sql_score.pragma("synchronous = 1");
+    sql_score.pragma("journal_mode = wal");
+  }
+
+  // And then we have two prepared statements to get and set the score data.
+  client.getScore = sql_score.prepare("SELECT * FROM scores WHERE user = ? AND guild = ?");
+  client.setScore = sql_score.prepare("INSERT OR REPLACE INTO scores (id, user, guild, points, level, last_msg, streak, prev_points) VALUES (@id, @user, @guild, @points, @level, @last_msg, @streak, @prev_points);");
+
 });
 
+//EVENT HANDLER FOR MESSAGE
 client.on("message", message => {
-  //format the command and the arguments
+  //prevents reply to itself for now
+  
+  //---FUNCTION TO CALCULATE POINTS----//
+  function add_points (last_msg, streak, prev_points) {
+    //First test to see if it is within the next 24 hour period
+
+    var points = 0.0;
+    var current_time = new Date().getTime();
+
+    // it has been! 24 hours!
+    if (last_msg +  86400000 < current_time) {
+      //streak available 172800
+      if (current_time - last_msg < 86400000) {
+        console.log("Your 24 hour cycle has reset!");
+        
+        if (streak >= STREAK_MAX) {
+          last_msg = new Date().getTime();
+          streak = streak;
+          prev_points = POINT_BASE + streak;
+          points = POINT_BASE + streak;
+          
+        } else {
+        
+          last_msg = new Date().getTime();
+          console.log("Streak increased");
+          streak = streak + 1;
+          prev_points = POINT_BASE + streak;
+          points = POINT_BASE + streak;
+        }
+        
+      //missed streak = back to 10
+      } else {
+        console.log("missed streak");
+        
+        last_msg = new Date().getTime();
+        streak = 0;
+        prev_points = POINT_BASE;
+        points = POINT_BASE;
+        //ADD Base points
+        
+      }
+    
+    //it has not been 24 hours 
+    } 
+    else {
+      //make sure it doesnt go below min
+      points = prev_points - POINT_SUBTRACT;
+      if (points < POINT_MIN) {
+
+        points = 0;
+        prev_points = 0;
+        
+      } else {
+        
+        prev_points = points;
+        
+      }
+    
+    }
+    
+    var changes = [last_msg, streak, prev_points, points];
+    return changes;
+  
+  }
+  
+  if (message.author.bot) return;
+
+  //press f to pay respects
+  if (
+    message.content.toLowerCase() === "press f to pay respects" ||
+    message.content.toLowerCase() === "f in chat" ||
+    message.content.toLowerCase() === "f"
+  ) {
+    message.channel.send("F");
+  }
+  if (message.content.toLowerCase() === "goodnight") {
+    message.channel.send("Goodnight!! Don't let the bed bugs bite :)");
+  }
+
   //!message.content.startsWith(config.prefix) ||
   if (message.author.bot) return;
+
+  //increment score per message
+  let score;
+  if (message.guild) {
+    score = client.getScore.get(message.author.id, message.guild.id);
+    var time = new Date().getTime()
+    if (!score) {
+      score = {
+        id: `${message.guild.id}-${message.author.id}`,
+        user: message.author.id,
+        guild: message.guild.id,
+        points: 0.0,
+        level: 1,
+        last_msg: time,
+        streak: 0,
+        prev_points: 10.0,
+        
+      };
+    }
+    //add score time!
+    if (message.channel.id !== "457046533716574210") {
+      var changes = add_points(score.last_msg, score.streak, score.prev_points);
+      score.last_msg = changes[0];
+      score.streak = changes[1];
+      score.prev_points = changes[2];
+      score.points += changes[3];
+      
+    }
+    
+    const curLevel = Math.floor(0.1 * Math.sqrt(score.points));
+    if (score.level < curLevel) {
+      score.level++;
+      message.reply(
+        `You've leveled up to level **${curLevel}**!`
+      );
+    }
+    client.setScore.run(score);
+  }
+  
+  //badge
+  let user;
+  if (message.guild) {
+    user = client.getBadge.get(message.author.id, message.guild.id);
+    if (!user) {
+      user = {
+        id: `${message.guild.id}-${message.author.id}`,
+        user: message.author.id,
+        guild: message.guild.id
+      };
+      client.setBadge.run(user);
+    }
+  }
+
+  //format the command and the arguments
+  if (message.content.indexOf(config.prefix) !== 0) return;
 
   const args = message.content
     .slice(config.prefix.length)
@@ -72,268 +240,60 @@ client.on("message", message => {
     .split(/ +/g);
   const command = args.shift().toLowerCase();
 
-  if (message.content.toLowerCase() === "69") {
-    message.channel.send("nice");
-  }
-
-  if (message.content.toLowerCase() === "wtf") {
-    const cursecat = client.emojis.find(emoji => emoji.name === "cursecat");
-    message.channel.send(`${cursecat}`);
-  }
-
-  if (message.content.toLowerCase() === "420") {
-    message.channel.send("**blaze it**");
-  }
-
-  if (
-    message.content.toLowerCase().includes("fuck you moon") ||
-    message.content.toLowerCase().includes("stupid moon")
-  ) {
-    message.channel.send("fuck you too 🖕");
-  }
-
-  if (
-    (message.content.toLowerCase().includes("vore") ||
-      message.content.toLowerCase().includes("v o r e")) &&
-    message.content.indexOf(config.prefix) !== 0
-  ) {
-    if (message.content.toLowerCase().includes("vore")) {
-      
-
-      /* let extra = Math.floor(Math.random() * Math.floor(100));
-      if (message.author.id === "175792267590762496") {
-        message.channel.send("I\'m starting to think that you're saying vore on purpose...");
-      } else if (5 <= extra && extra < 10) {
-        message.channel.send("*sigh* here we go again");
-      } */
-    }
-    /* if (message.content.toLowerCase().includes("v o r e"))
-      message.channel.send(
-        "*you thought you could get away with that vore mention, didja?'*"
-      );*/
-    /* var last_vore = config.last_vore;
-    var current_vore = Math.round(new Date().getTime() / 1000);
-
-    var difference = current_vore - last_vore;
-    var time_difference = Math.round(difference / 60);
-    config.last_vore = current_vore;
-
-    message.channel.send(
-      "The last mention had been " + time_difference + " minutes ago." 
-    ); */
-  }
-  //for later       .setThumbnail('https://i.imgur.com/hEg8Pkn.png')
-
-  //press E to pay respects
-  if (
-    message.content.toLowerCase() === "press f to pay respects" ||
-    message.content.toLowerCase() === "f in chat"
-  ) {
-    message.channel.send("E");
-  }
-
-  //goodnight
-  if (message.content.toLowerCase() === "goodnight") {
-    message.channel.send("nobody cares that you're going to sleep lol");
-  }
-
-  
-
-  /*if (command === "vorecount") {
-    //ideally want to store this in a json but global var is good for now
-    var last_vore = config.last_vore;
-    var current_vore = Math.round(new Date().getTime() / 1000);
-
-    var difference = current_vore - last_vore;
-    var hour_difference = Math.round(difference);
-    config.last_vore = current_vore;
-
-    message.channel.send(
-      "It had been **" +
-        hour_difference +
-        "** seconds since the last vore mention...but thanks to you, it's at 0 now."
-    );
-  } else if (command === "updaterps") {
-    /* const filter = m => m.author.id === message.author.id;
-    const collector = message.channel.createMessageCollector(filter, {
-      maxMatches: 1,
-      time: 15000
-    });
-    message.channel.send(
-      "Please enter your rice purity score. Keep in mind that this can be checked by any member publically so only input if you feel comfortable. Type cancel to cancel the action."
-    );
-
-    var score;
-
-    collector.on("collect", m => {
-     if (m.content === "cancel") {
-        message.channel.send("Action cancelled by user.");
-        collector.stop();
-        //exception likely
-      } 
-    if (
-        !m.content.isNaN() ||
-        m.content.parseInt() < 0 ||
-        m.content.parseInt() > 100
-      ) {
-        message.channel.send("Input a valid rice purity score please.");
-        collector.stop();
-      } else {
-        message.channel.send("hi");
-        score = m.content.parseInt();
-      }
-    }); 8? */
-
-  /*if (!args.length) {
-      message.channel.send("The proper way to use this command is `mg!updateRPS <your_score>`");
-    } else if (!isNaN(args[0].toString()) || args[0] < 0 || args[0] > 100) {
-      message.channel.send("I seriously doubt your rice purity score is " + args[0].toString() + "...");
-    } else if (args[0] === "help") {
-      message.channel.send("Update your rice purity score by running `mg!updateRPS <your_score>`. Keep in mind that this will be public and can be accessed by other people.");
-    } else {
-      message.channel.send("yay you have passed");
-    }*/
-
-  //============WRITE CODE BELOW================//
-  //"aight" == "imma head out"
-  if (message.content.toLowerCase() === "aight") {
-    message.channel.send("imma head out");
-  }
-  
-  
-  
-  // TEST BOT HELPER BM
-  if(message.isMentioned('637806606775615498')){
-    console.log("mentioned a role");
-    var statements = [
-      "Have you tried putting it in rice?",
-      "Maybe turn it off and turn it back on again?",
-      "You know the TAs have an email for a reason...",
-      "check semicolons dumbass",
-      "well look who didnt attend their discussion section",
-      "you can retake a class but you cant retake a party"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //ENG HELPER BM
-  if(message.isMentioned('585683246055161863')){
-    console.log("mentioned a role");
-    var statements = [
-      "KNOW YOUR FORMULAS",
-      "CHECK YOUR SIG FIGS",
-      "DROP THE MAJOR",
-      "This answer is trivial",
-      "TF YOU DONT KNOW HOW TO SOLVE A PARTIAL DIFF EQ with 3 boundry conditions?",
-      "matlab it",
-      "Clearly not top 10 public engineering school material"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //CS HELPER BM
-  if(message.isMentioned('585681474779349024')){
-    console.log("mentioned a role");
-    var statements = [
-      "DID YOU FORGET *ANOTHER* SEMICOLON? ",
-      "CHECK YOUR SIG FIGS",
-      "DROP THE MAJOR",
-      "This answer is trivial",
-      "you should have been taught this in the intro class",
-      "You belong in the dungeon"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //MATH HELPER BM
-  if(message.isMentioned('585681297645764627')){
-    console.log("mentioned a role");
-    var statements = [
-      "you can't count ",
-      "switch your degrees and radians dummy",
-      "https://www.wolframalpha.com/",
-      "just add lol",
-      "you should have been taught this in the intro class",
-      "matlab it"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //BIO HELPER BM
-  if(message.isMentioned('585681666312241162')){
-    console.log("mentioned a role");
-    var statements = [
-      "mitochondria is the powerhouse of the cell ",
-      "you're missing brain cells",
-      "maybe don't apply to med school",
-      "",
-      "you should have been taught this in the intro class",
-      "matlab it"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //CHEM HELPER BM
-  if(message.isMentioned('585681519054422016')){
-    console.log("mentioned a role");
-    var statements = [
-      "just add HCl",
-      "switch your degrees and radians dummy",
-      "YOU'RE STUPID",
-      "This answer is trivial",
-      "you should have been taught this in the intro class",
-      "matlab it"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  //PHYSICS HELPER BM
-  if(message.isMentioned('585681575740571650')){
-    console.log("mentioned a role");
-    var statements = [
-      "PHYSUCKS ",
-      "Did you remember air resistance?",
-      "are you metric or imperial smh",
-      "Just Taylor expand it lmao",
-      "did you try F=ma",
-      "gravity isnt always earth"
-    ];
-    message.channel.send(
-      statements[Math.floor(Math.random() * statements.length)]
-    );
-  }
-  
-  
-  if (message.content.indexOf(config.prefix) !== 0) return;
-
-  if (command === "ping") {
+  //now for the commands
+  if (command === "help") {
+    client.commands.get("help").execute(message, args);
+  } else if (command === "points") {
+    client.commands.get("points").execute(message, args, score);
+  } else if (command === "pointsinfo") {
+    client.commands.get("pointsInfo").execute(message, args, score);
+  } else if (command === "changepoints") {
+    client.commands.get("changePoints").execute(message, args, client, sql_score);
+  } else if (command === "leaderboard")  {
+    client.commands.get("leaderboard").execute(message, args, sql_score, client);
+  } else if (command === "roll") {
+    client.commands.get("roll").execute(message, args, client, sql_score, score);
+  } else if (command === "ping") {
     client.commands.get("ping").execute(message, args);
-  } else if (command === "b") {
-    client.commands.get("b").execute(message, args);
   } else if (command === "speak") {
     client.commands.get("speak").execute(message, args, client);
-  } else if (command === "snap") {
-    client.commands.get("snap").execute(message, args);
-  } else if (command === "unsnap") {
-    client.commands.get("unsnap").execute(message, args);
-  } else if (command === "poll") {
-    client.commands.get("poll").execute(message, args, client);
+  } else if (command === "convo") {
+    client.commands.get("convo").execute(message, args, client);
+  } else if (command === "nmcount") {
+    client.commands.get("nmCount").execute(message, args);
+  } else if (command === "nmchange") {
+    client.commands.get("nmChange").execute(message, args);
+  } else if (command === "verify") {
+    client.commands.get("verify").execute(message, args, client);
+  } else if (command === "viewbadges") {
+    client.commands.get("viewBadges").execute(message, args, client, sql);
+  } else if (command === "allbadges") {
+    client.commands.get("allBadges").execute(message, args);
+  } else if (command === "equipbadges" || command === "equipBadge" || command === "equip") {
+    client.commands.get("equipBadges").execute(message, args, client, sql);
+  } else if (command === "addbadges" || command === "addbadge") {
+    client.commands.get("addBadges").execute(message, args, client, sql);
+  } else if (command === "removebadges" || command === "removebadge") {
+    client.commands.get("removeBadges").execute(message, args, client, sql);
+  } else if (command === "clearbadges") {
+    client.commands.get("clearBadges").execute(message, args, client, sql);
+  } else if (command === "retrievebadges") {
+    client.commands.get("retrieveBadges").execute(message, args, client, sql)
+  } else if (command === "findbadges") {
+    client.commands.get("findBadges").execute(message, args)
+  } else if (command === "badges" || command === "badge" || command === "badgeshelp" || command === "badgehelp") {
+    client.commands.get("badges").execute(message, args);
+  } else if (command === "merch") {
+    client.commands.get("merch").execute(message, args);
+  } else if (command === "shop") {
+    client.commands.get("shop").execute(message, args, client, sql, sql_score);
+  } else if (command === "happyholidays") {
+    client.commands.get("happyHolidays").execute(message, args, client, sql);
   } else {
-    message.channel.send("I don't know what you're trying to tell me, but that is not a valid commnad.");
+    message.channel.send("That is not a valid command!");
+    return;
+    // You might as well have an array that runs a for loop through everything smh
   }
-
 });
 
 client.login(config.token);
