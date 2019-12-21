@@ -13,6 +13,7 @@
   "dependencies": {
     "better-sqlite3": "^5.4.3",
     "discord.js": "^11.5.1",
+    "enmap": "^5.2.0",
     "express": "^4.16.4",
     "node-gyp": "^6.0.0"
   },
@@ -20,7 +21,8 @@
     "node": "8.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/hello-express"
+    "type": "git",
+    "url": "https://github.com/AthenaBird/Sun-God-Bot"
   },
   "license": "MIT",
   "keywords": [

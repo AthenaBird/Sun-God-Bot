@@ -1,6 +1,7 @@
 dependencies:
   better-sqlite3: 5.4.3
   discord.js: 11.5.1
+  enmap: 5.2.0
   express: 4.17.1
   node-gyp: 6.0.0
 packages:
@@ -258,6 +259,14 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
+  /enmap/5.2.0:
+    dependencies:
+      lodash: 4.17.15
+    dev: false
+    peerDependencies:
+      better-sqlite3: ^5.4.1
+    resolution:
+      integrity: sha512-Bw9VQpk3Vkm9BNc7XqRBz1RMEjBqBiolCr2aaTkkBX7s8TuhnKD/yl/SgakBp3OtYl+f9vw3LpHOfWbwtb78+Q==
   /env-paths/1.0.0:
     dev: false
     engines:
@@ -564,6 +573,10 @@ packages:
       '0': node >=0.6.0
     resolution:
       integrity: sha1-MT5mvB5cwG5Di8G3SZwuXFastqI=
+  /lodash/4.17.15:
+    dev: false
+    resolution:
+      integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /long/4.0.0:
     dev: false
     resolution:
@@ -1097,5 +1110,6 @@ shrinkwrapVersion: 3
 specifiers:
   better-sqlite3: ^5.4.3
   discord.js: ^11.5.1
+  enmap: ^5.2.0
   express: ^4.16.4
   node-gyp: ^6.0.0
