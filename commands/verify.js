@@ -1,10 +1,11 @@
+const Discord = require("discord.js");
 const config = require("../config.json");
 
 module.exports = {
 	name: 'verify',
 	description: 'Verifies a new member by giving them the roles and the name!',
 	execute(message, args, client) {
-    
+     message.delete(100);
     //Helper function
     function getUserID(mention) {
       if (!mention) return;
@@ -31,10 +32,16 @@ module.exports = {
       maxMatches: 5,
       time: 60000
     });
-    message.channel.send(
-      "Please hit enter in the following order: mention the user/the user ID, name, major, college, and class (`22`, `23`, or `older`). Type cancel to cancel the action."
-    );
+   
+    //store the message ID to be deleted later
+    message.reply("Please send in the following order (seperate messages): mention the user/the user ID, name, major, college, and class (`22`, `23`, or `older`). Type cancel to cancel the action.")
+      .then(sent => { // 'sent' is that message you just sent
+      global.lastMessageID = sent.id;
+      console.log(global.lastMessageID);
+    });
+  
 
+   
     let completed = true;
 
     collector.on("collect", m => {
@@ -47,7 +54,7 @@ module.exports = {
         console.log(`Collected ${m.content}`);
       }
     });
-
+   
     let info = [];
     let spacer = " | ";
 
@@ -104,10 +111,10 @@ module.exports = {
       
       //if no mentions
       if (mentioned === undefined) {
-        message.channel.send("None mentioned, looking for ids instead...");
+        //message.channel.send("None mentioned, looking for ids instead...");
         //if no ids
         if (info[0].id === undefined) {
-          message.channel.send("No ids were mentioned. Exiting...");
+          //message.channel.send("No ids were mentioned. Exiting...");
           return;
         } else {
           //check if the IDs are valid.
@@ -120,15 +127,14 @@ module.exports = {
             }
           }
           //retrieve the member from the guild as an object
-          console.log(info[0].id);
           user = guild.member(info[0].content);
 
         }
         
       //set the member as the mention
       } else {
-
         user = info[0].mentions.members.first();
+        
       }
       
       //begin clapping asses and adding nicknames
@@ -185,6 +191,7 @@ module.exports = {
               roles.push(nonUCSD_role);
               break;
           }
+          
           //give class roles
           switch (info[4].content.toLowerCase()) {
             case class_22_role_name.toLowerCase():
@@ -218,7 +225,7 @@ module.exports = {
               spacer +
               info[3].content
           );
-          //A way to do confirmations would be nice
+          //TODO A way to do confirmations would be nice
           message.channel.send(
             "Verified: **" +
               info[1] +
@@ -233,15 +240,38 @@ module.exports = {
               "**"
           );
           //keeping verify clean
+          
           for(var i =0; i< info.length; i++){
-            console.log(info[i].id);
-            info[i].id.delete(5)
+          
+             message.channel.fetchMessage(info[i].id)
+            .then(message => message.delete(2000))
+            .catch(console.error);
             
           }
-          //client.channels.get("425873171431030786").send("***🎉🎉Welcome <@" + user.id + "> to this server!🎉🎉*** Please check out #roles to get roles and create a profile in #profiles!");
+           message.channel.fetchMessage(global.lastMessageID)
+            .then(message => message.delete(2000))
+            .catch(console.error);
+          //Welcome Message       
+          client.channels.get("425873171431030786").send("***🎉🎉🎉  Welcome <@" + user.id + "> to our server!  🎉🎉🎉*** \n Please check out " 
+                                                         + message.guild.channels.find(channel => channel.name === "roles").toString() 
+                                                         + " to get roles and introduce yourself in " 
+                                                         + message.guild.channels.find(channel => channel.name === "profiles").toString() + "!" ); 
+        
           
+          //DM the user about roles
+          const embed = new Discord.RichEmbed()
+            .setColor("ff4c4c")
+            .setAuthor(info[1].content + spacer + info[2].content + spacer + info[3].content)
+            .setTitle("**Welcome in! You have been verified into UCSD 22!**")
+            .setDescription("**Please read this important DM!** You now have full access to channels now. I am Sun God, and I handle most of our server specific utitlies.")
+            .addField("__**Feeling Lost?**__", "Contact any Moderators if you have any questions, comments, concerns. You can find specific channel information at <#573758712456544256>.", true)
+            .addField("__**Roles**__", "Head to <#656320898655191071> to receive roles for more channel access and game roles!", true)
+            .addField("__**Profiles**__", "Introduce yourself in <#618718251832049664> using the provided pinned format.", true)
+            .addField("__**Badges and Points**__", "Our server uses a specific badge system where you can customize your nickname to have emojis. Check it out by sending `sg!badges` in <#639954541617348618>. Points are earned by being active in our server; check how many you have with `sg!points`", true);
+          user.send(embed);
         }
       }
+      
     });
   }
 }
