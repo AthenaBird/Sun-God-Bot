@@ -15,7 +15,7 @@ The prefix for all commands is `sg!`.
 ## Badges
 
 Badges is a unique function to the server in which members are able to earn certain cosmetic awards for participating in events, competitions, etc.
-Badges are displayed next to the nickname, and a member can have up to three badgeds at once.
+Badges are displayed next to the nickname, and a member can have up to three badges at once.
 
 -----
 
