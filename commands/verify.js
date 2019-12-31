@@ -26,7 +26,14 @@ module.exports = {
     
 		if (message.author.id === !config.ownerID) {
       return;
+    } 
+    
+    if(!(message.member.roles.find(r => r.name === "Kages 👑") || message.member.roles.find(r => r.name === "Moderators 🛡️"))) {
+      message.channel.send("You are not authorized to use this command! Please hold tight as a moderator will verify you soon.");
+      return;
     }
+    
+    
     const filter = m => m.author.id === message.author.id;
     const collector = message.channel.createMessageCollector(filter, {
       maxMatches: 5,
