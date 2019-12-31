@@ -50,3 +50,31 @@ Displays all the badges available in the server.
 _Parent:_ `badges`
 
 Allows the user to equip up to three badges of their choosing. This function will not work if their names are more than 29 characters long.
+
+-----
+
+`viewBadges`
+
+_Parent:_ `badges`
+
+Displays which badges a user owns. Optional parameters: \<mention> to view another user's badges.
+  
+-----
+
+### Admin Commands for Badges
+
+`addBadges`
+
+`removeBadges`
+
+`clearBadges`
+
+-----
+  
+## Verification
+
+`verify`
+
+Streamlines the process of verification in the server. When called, the user is prompted to enter information about the user he or she is verifying. 
+The bot automatically applies the correct roles and changes the nickname, along with welcoming the user in the general chat and sending the new user
+a DM general information about the discord.
