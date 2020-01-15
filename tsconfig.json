@@ -1,0 +1,15 @@
+{
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build",
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "src/**/*.js",
+    "test/**/*.js",
+    "index.js"
+  ]
+}
