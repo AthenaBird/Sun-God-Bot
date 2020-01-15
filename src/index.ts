@@ -80,12 +80,12 @@ const commandFiles = fs
 
 const _helpers: Helper = {} as Helper; // FIXME: Minor typing hack here
 
-const _defaultCommand = {
+const noopCommand = {
   execute: () => void 0,
 };
 
-function _commandLookup(name: string) {
-  return commands.get(name) ?? _defaultCommand;
+function getCommand(name: string) {
+  return commands.get(name) ?? noopCommand;
 }
 
 for (const file of commandFiles) {
@@ -134,7 +134,7 @@ client.on('ready', () => {
     try {
       const sqlBadgeAdd = `ALTER TABLE badges ADD COLUMN ${keys[i]} INT;`;
       sql.prepare(sqlBadgeAdd).run();
-    } catch (err) {}
+    } catch (err) { }
   }
 
   // And then we have two prepared statements to get and set the score data
@@ -302,62 +302,62 @@ client.on('message', message => {
   const command = (args.shift() ?? '').toLowerCase();
   //now for the commands
   if (command === 'help') {
-    _commandLookup('help').execute(message, args);
+    getCommand('help').execute(message, args);
   } else if (command === 'points') {
-    _commandLookup('points').execute(message, args, score);
+    getCommand('points').execute(message, args, score);
   } else if (command === 'pointsinfo') {
-    _commandLookup('pointsInfo').execute(message, args, score);
+    getCommand('pointsInfo').execute(message, args, score);
   } else if (command === 'changepoints') {
-    _commandLookup('changePoints').execute(message, args, client, sqlScore);
+    getCommand('changePoints').execute(message, args, client, sqlScore);
   } else if (command === 'leaderboard') {
-    _commandLookup('leaderboard').execute(message, args, sqlScore, client);
+    getCommand('leaderboard').execute(message, args, sqlScore, client);
   } else if (command === 'roll') {
-    _commandLookup('roll').execute(message, args, client, sqlScore, score);
+    getCommand('roll').execute(message, args, client, sqlScore, score);
   } else if (command === 'ping') {
-    _commandLookup('ping').execute(message, args);
+    getCommand('ping').execute(message, args);
   } else if (command === 'speak') {
-    _commandLookup('speak').execute(message, args, client);
+    getCommand('speak').execute(message, args, client);
   } else if (command === 'convo') {
-    _commandLookup('convo').execute(message, args, client);
+    getCommand('convo').execute(message, args, client);
   } else if (command === 'nmcount') {
-    _commandLookup('nmCount').execute(message, args);
+    getCommand('nmCount').execute(message, args);
   } else if (command === 'nmchange') {
-    _commandLookup('nmChange').execute(message, args);
+    getCommand('nmChange').execute(message, args);
   } else if (command === 'verify') {
-    _commandLookup('verify').execute(message, args, client);
+    getCommand('verify').execute(message, args, client);
   } else if (command === 'viewbadges') {
-    _commandLookup('viewBadges').execute(message, args, client, sql);
+    getCommand('viewBadges').execute(message, args, client, sql);
   } else if (command === 'allbadges') {
-    _commandLookup('allBadges').execute(message, args);
+    getCommand('allBadges').execute(message, args);
   } else if (
     command === 'equipbadges' ||
     command === 'equipBadge' ||
     command === 'equip'
   ) {
-    _commandLookup('equipBadges').execute(message, args, client, sql);
+    getCommand('equipBadges').execute(message, args, client, sql);
   } else if (command === 'addbadges' || command === 'addbadge') {
-    _commandLookup('addBadges').execute(message, args, client, sql);
+    getCommand('addBadges').execute(message, args, client, sql);
   } else if (command === 'removebadges' || command === 'removebadge') {
-    _commandLookup('removeBadges').execute(message, args, client, sql);
+    getCommand('removeBadges').execute(message, args, client, sql);
   } else if (command === 'clearbadges') {
-    _commandLookup('clearBadges').execute(message, args, client, sql);
+    getCommand('clearBadges').execute(message, args, client, sql);
   } else if (command === 'retrievebadges') {
-    _commandLookup('retrieveBadges').execute(message, args, client, sql);
+    getCommand('retrieveBadges').execute(message, args, client, sql);
   } else if (command === 'findbadges') {
-    _commandLookup('findBadges').execute(message, args);
+    getCommand('findBadges').execute(message, args);
   } else if (
     command === 'badges' ||
     command === 'badge' ||
     command === 'badgeshelp' ||
     command === 'badgehelp'
   ) {
-    _commandLookup('badges').execute(message, args);
+    getCommand('badges').execute(message, args);
   } else if (command === 'merch') {
-    _commandLookup('merch').execute(message, args);
+    getCommand('merch').execute(message, args);
   } else if (command === 'shop') {
-    _commandLookup('shop').execute(message, args, client, sql, sqlScore);
+    getCommand('shop').execute(message, args, client, sql, sqlScore);
   } else if (command === 'happyholidays') {
-    _commandLookup('happyHolidays').execute(message, args, client, sql);
+    getCommand('happyHolidays').execute(message, args, client, sql);
   } else {
     message.channel.send('That is not a valid command!');
     return;
