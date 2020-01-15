@@ -171,62 +171,62 @@ client.on('ready', () => {
   );
 });
 
+//---FUNCTION TO CALCULATE POINTS----//
+function addPoints(lastMsg: number, streak: number, prevPoints: number) {
+  //First test to see if it is within the next 24 hour period
+
+  let points = 0.0;
+  const now = new Date().getTime();
+
+  // it has been! 24 hours!
+  if (lastMsg + 86400000 < now) {
+    //streak available 172800
+    if (now - lastMsg < 86400000) {
+      console.log('Your 24 hour cycle has reset!');
+
+      if (streak >= STREAK_MAX) {
+        lastMsg = new Date().getTime();
+        streak = streak;
+        prevPoints = POINT_BASE + streak;
+        points = POINT_BASE + streak;
+      } else {
+        lastMsg = new Date().getTime();
+        console.log('Streak increased');
+        streak = streak + 1;
+        prevPoints = POINT_BASE + streak;
+        points = POINT_BASE + streak;
+      }
+
+      //missed streak = back to 10
+    } else {
+      console.log('missed streak');
+
+      lastMsg = new Date().getTime();
+      streak = 0;
+      prevPoints = POINT_BASE;
+      points = POINT_BASE;
+      //ADD Base points
+    }
+
+    //it has not been 24 hours
+  } else {
+    //make sure it doesnt go below min
+    points = prevPoints - POINT_SUBTRACT;
+    if (points < POINT_MIN) {
+      points = 0;
+      prevPoints = 0;
+    } else {
+      prevPoints = points;
+    }
+  }
+
+  const changes = [lastMsg, streak, prevPoints, points];
+  return changes;
+}
+
 //EVENT HANDLER FOR MESSAGE
 client.on('message', message => {
   //prevents reply to itself for now
-
-  //---FUNCTION TO CALCULATE POINTS----//
-  function addPoints(lastMsg: number, streak: number, prevPoints: number) {
-    //First test to see if it is within the next 24 hour period
-
-    let points = 0.0;
-    const now = new Date().getTime();
-
-    // it has been! 24 hours!
-    if (lastMsg + 86400000 < now) {
-      //streak available 172800
-      if (now - lastMsg < 86400000) {
-        console.log('Your 24 hour cycle has reset!');
-
-        if (streak >= STREAK_MAX) {
-          lastMsg = new Date().getTime();
-          streak = streak;
-          prevPoints = POINT_BASE + streak;
-          points = POINT_BASE + streak;
-        } else {
-          lastMsg = new Date().getTime();
-          console.log('Streak increased');
-          streak = streak + 1;
-          prevPoints = POINT_BASE + streak;
-          points = POINT_BASE + streak;
-        }
-
-        //missed streak = back to 10
-      } else {
-        console.log('missed streak');
-
-        lastMsg = new Date().getTime();
-        streak = 0;
-        prevPoints = POINT_BASE;
-        points = POINT_BASE;
-        //ADD Base points
-      }
-
-      //it has not been 24 hours
-    } else {
-      //make sure it doesnt go below min
-      points = prevPoints - POINT_SUBTRACT;
-      if (points < POINT_MIN) {
-        points = 0;
-        prevPoints = 0;
-      } else {
-        prevPoints = points;
-      }
-    }
-
-    const changes = [lastMsg, streak, prevPoints, points];
-    return changes;
-  }
 
   if (message.author.bot) return;
 
@@ -241,9 +241,6 @@ client.on('message', message => {
   if (message.content.toLowerCase() === 'goodnight') {
     message.channel.send("Goodnight!! Don't let the bed bugs bite :)");
   }
-
-  //!message.content.startsWith(config.prefix) ||
-  if (message.author.bot) return;
 
   //increment score per message
   const time = new Date().getTime();
