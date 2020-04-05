@@ -15,10 +15,10 @@
     "emoji": "🌟",
     "description": "Attended 3 IRL discord events.",
     "type": "event",
-    "levelable": true,
-    "previous": "one_star",
+    "levelable": false,
+    "parent": "one_star",
     "next": "five_star",
-    "level": 2,
+    "level": 3,
     "rarity": "Uncommon"
   },
 
@@ -27,10 +27,10 @@
     "emoji": "✨",
     "description": "Attended 5 IRL discord events.",
     "type": "event",
-    "levelable": true,
-    "previous": "three_star",
+    "levelable": false,
+    "parent": "one_star",
     "next": "eight_star",
-    "level": 3,
+    "level": 5,
     "rarity": "Rare"
   },
 
@@ -39,9 +39,9 @@
     "emoji": "💫",
     "description": "Attended 8 IRL discord events.",
     "type": "event",
-    "levelable": true,
-    "previous": "five_star",
-    "level": 4,
+    "levelable": false,
+    "parent": "one_star",
+    "level": 8,
     "rarity": "Epic"
   },
 
@@ -101,9 +101,9 @@
     "emoji": "📚",
     "description": "Attended three discord study jams",
     "type": "participant",
-    "levelable": true,
+    "levelable": false,
     "level": 2,
-    "previous": "study_jam_1",
+    "parent": "study_jam_1",
     "rarity": "Common"
   },
 
@@ -154,7 +154,7 @@
     "type": "participant",
     "levelable": false,
     "level": 2,
-    "previous": "streamer_1",
+    "parent": "streamer_1",
     "rarity": "Rare"
   },
 
@@ -214,7 +214,7 @@
     "emoji": "🌕",
     "description": "Went to three informal meetups with a musuem picture for proof",
     "type": "participant",
-    "levelable": true,
+    "levelable": false,
     "previous": "informal_meetup_1",
     "level": 2,
     "rarity": "Uncommon"
@@ -238,5 +238,47 @@
     "levelable": false,
     "level": 1,
     "rarity": "Common"
+  },
+  
+  "happy_lny": {
+    "name": "Happy Lunar New Year!",
+    "emoji": "🏮",
+    "description": "Happy Lunar New Year!",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "ice_skating": {
+    "name": "Ice Skating Fundraiser",
+    "emoji": "⛸️",
+    "description": "Attended our ice skating fundraiser",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Epic"
+  },
+  
+  "happy_2nd_bday": {
+    "name": "UCSD 22's 2nd Birthday!",
+    "emoji": "🎉",
+    "description": "Celebrated the server turning 2 years old!",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "april_fools": {
+    "name": "April Fools!",
+    "emoji": "🃏",
+    "description": "Watched our server turn into chaos.",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
   }
+  
+  
 }

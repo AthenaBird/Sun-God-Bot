@@ -11,14 +11,14 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^5.4.3",
-    "discord.js": "^11.5.1",
-    "enmap": "^5.2.0",
-    "express": "^4.16.4",
-    "node-gyp": "^6.0.0"
+    "better-sqlite3": "^6.0.1",
+    "discord.js": "^12.0.1",
+    "enmap": "^5.2.4",
+    "express": "^4.17.1",
+    "node-gyp": "^6.1.0"
   },
   "engines": {
-    "node": "8.x"
+    "node": "12.x"
   },
   "repository": {
     "type": "git",

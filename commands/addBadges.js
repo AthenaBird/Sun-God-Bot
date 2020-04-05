@@ -7,17 +7,17 @@ module.exports = {
   execute(message, args, client, sql) {
     //ADDBADGES function allows for the sql updating
     function addBadges(columnName, numberBadges, id) {
+      const guild_id = "425866519650631680";
       var statement =
         "UPDATE badges SET " +
         columnName +
         " = " +
         numberBadges +
-        ' WHERE id = "' +
-        id +
-        '";';
+        ' WHERE user = ' +
+        id + " AND guild = " + guild_id;
       console.log(statement);
-      client.addBadge = sql.prepare(statement);
-      client.addBadge.run();
+      client.addBadges = sql.prepare(statement);
+      client.addBadges.run();
     }
 
     //GET USER function for getting ID
@@ -31,10 +31,48 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
     }
+    
+    //check to see if the user gets a lEVEL Up or not. If so, add the badge. 
+    function levelBadges(columnName, numberBadges, id) {
+      
+      var original_badge = badges_json[columnName];
+      var name = columnName;
+      
+      //---compares the current badge and the next badge---
+      let has_next = true;
+      while(has_next) {
+        var next_badge = badges_json[name].next;
+        var to_next = badges_json[name].level;
+        var leveled_badge = badges_json[next_badge];
+      
+        //compare number of that badge to how many the user owns:
+        if(numberBadges < to_next){
+          return;
+        } else if (numberBadges >= to_next){
+          //check if they have enough for even more?
+          
+        
+        }
+      }
+      
+      
+      
+      var statement =
+        "UPDATE badges SET " +
+          columnName +
+          " = " +
+          numberBadges +
+          ' WHERE id = "' +
+          id +
+          '";';
+        console.log(statement);
+        client.addBadge = sql.prepare(statement);
+        client.addBadge.run();
+      }
 
     //Variables and constants
     const keys = Object.keys(badges_json);
@@ -70,7 +108,7 @@ module.exports = {
     }
 
     //parse the members to receive badges
-    let guild = client.guilds.get("425866519650631680");
+    let guild = client.guilds.cache.get("425866519650631680");
     var mentioned = message.mentions.members.first();
     if (mentioned === undefined) {
       message.channel.send("None mentioned, looking for ids instead...");
@@ -111,7 +149,7 @@ module.exports = {
             client.setBadge.run(user);
           }
 
-          let user_id = `${message.guild.id}-${id_user.id}`;
+          let user_id = `${id_user.id}`;
           let added_amount;
           let prev_amount = user[badge_to_add];
           console.log(prev_amount);
@@ -128,6 +166,11 @@ module.exports = {
           added_amount = prev_amount + 1;
           
           addBadges(badge_to_add, added_amount, user_id);
+          
+          /* if(badges_json[badge_to_add].levelable) {
+             levelBadges(badge_to_add, added_amount, user_id);
+          }*/
+          
           message.channel.send(
             "Succesfully added a **" +
               badges_json[badge_to_add].name +
@@ -166,7 +209,7 @@ module.exports = {
           client.setBadge.run(user);
         }
 
-        let user_id = `${message.guild.id}-${mentioned_user.id}`;
+        let user_id = `${mentioned_user.id}`;
 
         let prev_amount = user[badge_to_add];
         if (prev_amount >= 1) {

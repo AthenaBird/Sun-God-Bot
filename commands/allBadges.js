@@ -7,7 +7,7 @@ module.exports = {
   execute(message, args) {
     const keys = Object.keys(badges);
 
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
       .setColor("ff4c4c")
       .setTitle("**List of All Available Badges**")
       .setDescription(

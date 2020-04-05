@@ -7,6 +7,7 @@ const SQLite = require("better-sqlite3");
 const sql_score = new SQLite("./databases/scores.sqlite");
 const sql = new SQLite("./databases/badges.sqlite");
 const sql_emblems = new SQLite("./databases/emblems.sqlite");
+const sql_calendar = new SQLite("./databases/calendar.sqlite");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -14,14 +15,13 @@ const app = express();
 const POINT_SUBTRACT = 1;
 const POINT_BASE = 10;
 const POINT_MIN = 1;
-const STREAK_MAX = 5;
+const STREAK_MAX = 3;
 
-const client = new Discord.Client();
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 client.commands = new Discord.Collection();
 const commandFiles = fs
-  .readdirSync("./commands")
+  .readdirSync("./commands/")
   .filter(file => file.endsWith(".js"));
-
 
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
@@ -35,7 +35,24 @@ for (const file of commandFiles) {
 app.get("/", (request, response) => {
   console.log(Date.now() + " Ping Received");
   response.sendStatus(200);
+
+  //---EVENT CHECKER---//
+  //Checks every hour and accesses the database
+  //TODO: this is in the messages section so it only checks if a message has been sent....
+  var c_time = new Date();
+  
+  var minutes_time = c_time.getMinutes().toString();
+  var seconds_time = c_time.getSeconds().toString();
+  
+  //setTimeout(s=> {console.log("Time check" + minutes_time + " " + seconds_time)}, 1000);
+  //&& (Number(seconds_time) > 0 && Number(seconds_time) <= 10)
+  
+  //if (minutes_time === "40" && (Number(seconds_time) % 10 === 0)) 
+    console.log("Checking calendar for event notifications...")
+    setTimeout(s => {client.commands.get("checkCalendar").execute(client, sql_calendar)}, 10000);      
+ 
 });
+
 app.listen(process.env.PORT);
 setInterval(() => {
   http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
@@ -45,6 +62,7 @@ client.on("ready", () => {
   //set activity
   client.user.setActivity("sg!help", { type: "LISTENING" });
 
+  //prepare the badges table
   const table = sql
     .prepare(
       "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'badges';"
@@ -78,90 +96,122 @@ client.on("ready", () => {
   client.setBadge = sql.prepare(
     "INSERT OR REPLACE INTO badges (id, user, guild) VALUES (@id, @user, @guild);"
   );
-  
-  const score_table = sql_score.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'scores';").get();
-  if (!score_table['count(*)']) {
+
+  //prepare the scores table
+  const score_table = sql_score
+    .prepare(
+      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'scores';"
+    )
+    .get();
+  if (!score_table["count(*)"]) {
     // If the table isn't there, create it and setup the database correctly.
-    sql_score.prepare("CREATE TABLE scores (id TEXT PRIMARY KEY, user TEXT, guild TEXT, points INTEGER, level INTEGER, last_msg BIGINT, streak INTEGER, prev_points INTEGER);").run();
+    sql_score
+      .prepare(
+        "CREATE TABLE scores (id TEXT PRIMARY KEY, user TEXT, guild TEXT, points INTEGER, level INTEGER, last_msg BIGINT, streak INTEGER, prev_points INTEGER);"
+      )
+      .run();
     // Ensure that the "id" row is always unique and indexed.
-    sql_score.prepare("CREATE UNIQUE INDEX idx_scores_id ON scores (id);").run();
+    sql_score
+      .prepare("CREATE UNIQUE INDEX idx_scores_id ON scores (id);")
+      .run();
     sql_score.pragma("synchronous = 1");
     sql_score.pragma("journal_mode = wal");
   }
 
   // And then we have two prepared statements to get and set the score data.
-  client.getScore = sql_score.prepare("SELECT * FROM scores WHERE user = ? AND guild = ?");
-  client.setScore = sql_score.prepare("INSERT OR REPLACE INTO scores (id, user, guild, points, level, last_msg, streak, prev_points) VALUES (@id, @user, @guild, @points, @level, @last_msg, @streak, @prev_points);");
+  client.getScore = sql_score.prepare(
+    "SELECT * FROM scores WHERE user = ? AND guild = ?"
+  );
+  client.setScore = sql_score.prepare(
+    "INSERT OR REPLACE INTO scores (id, user, guild, points, level, last_msg, streak, prev_points) VALUES (@id, @user, @guild, @points, @level, @last_msg, @streak, @prev_points);"
+  );
 
+  //----EVENTS TABLE----//
+  const events_table = sql_calendar
+    .prepare(
+      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'calendar';"
+    )
+    .get();
+  if (!events_table["count(*)"]) {
+    // If the table isn't there, create it and setup the database correctly.
+    sql_calendar
+      .prepare(
+        "CREATE TABLE calendar (id TEXT PRIMARY KEY, name TEXT, host TEXT, category TEXT, priority INT, description TEXT, start_time BIGINT, end_time BIGINT, location TEXT, notify INT);"
+      )
+      .run();
+    // Ensure that the "id" row is always unique and indexed.
+    sql_calendar.prepare("CREATE UNIQUE INDEX idx_calendar_id ON calendar (id);").run();
+    sql_calendar.pragma("synchronous = 1");
+    sql_calendar.pragma("journal_mode = wal");
+  }
+
+  client.setCalendar = sql_calendar.prepare(
+    "INSERT OR REPLACE INTO calendar (id, name, host, category, priority, description, start_time, end_time, location, notify) VALUES (@id, @name, @host, @category, @priority, @description, @start_time, @end_time, @location, @notify);"
+  );
+  client.getCalendar = sql_calendar.prepare(
+    "SELECT * FROM calendar ORDER BY start_time ASC");
 });
 
 //EVENT HANDLER FOR MESSAGE
 client.on("message", message => {
   //prevents reply to itself for now
-  
+
   //---FUNCTION TO CALCULATE POINTS----//
-  function add_points (last_msg, streak, prev_points) {
+  function add_points(last_msg, streak, prev_points) {
     //First test to see if it is within the next 24 hour period
 
     var points = 0.0;
     var current_time = new Date().getTime();
 
     // it has been! 24 hours!
-    if (last_msg +  86400000 < current_time) {
+    if (last_msg + 86400000 < current_time) {
       //streak available 172800
-      if (current_time - last_msg < 86400000) {
+      if (current_time - last_msg < 129600000) {
         console.log("Your 24 hour cycle has reset!");
-        
+
         if (streak >= STREAK_MAX) {
           last_msg = new Date().getTime();
           streak = streak;
           prev_points = POINT_BASE + streak;
           points = POINT_BASE + streak;
-          
         } else {
-        
           last_msg = new Date().getTime();
           console.log("Streak increased");
           streak = streak + 1;
           prev_points = POINT_BASE + streak;
           points = POINT_BASE + streak;
         }
-        
-      //missed streak = back to 10
+
+        //missed streak = back to 10
       } else {
         console.log("missed streak");
-        
+
         last_msg = new Date().getTime();
         streak = 0;
         prev_points = POINT_BASE;
         points = POINT_BASE;
         //ADD Base points
-        
       }
-    
-    //it has not been 24 hours 
-    } 
-    else {
+
+      //it has not been 24 hours
+    } else {
       //make sure it doesnt go below min
       points = prev_points - POINT_SUBTRACT;
       if (points < POINT_MIN) {
-
         points = 0;
         prev_points = 0;
-        
       } else {
-        
         prev_points = points;
-        
       }
-    
     }
-    
+
     var changes = [last_msg, streak, prev_points, points];
     return changes;
-  
   }
+
   
+  //---COMMANDS AND MESSAGES---//
+
   if (message.author.bot) return;
 
   //press f to pay respects
@@ -183,7 +233,7 @@ client.on("message", message => {
   let score;
   if (message.guild) {
     score = client.getScore.get(message.author.id, message.guild.id);
-    var time = new Date().getTime()
+    var time = new Date().getTime();
     if (!score) {
       score = {
         id: `${message.guild.id}-${message.author.id}`,
@@ -193,8 +243,7 @@ client.on("message", message => {
         level: 1,
         last_msg: time,
         streak: 0,
-        prev_points: 10.0,
-        
+        prev_points: 10.0
       };
     }
     //add score time!
@@ -204,19 +253,16 @@ client.on("message", message => {
       score.streak = changes[1];
       score.prev_points = changes[2];
       score.points += changes[3];
-      
     }
-    
+
     const curLevel = Math.floor(0.1 * Math.sqrt(score.points));
     if (score.level < curLevel) {
       score.level++;
-      message.reply(
-        `You've leveled up to level **${curLevel}**!`
-      );
+      message.reply(`You've leveled up to level **${curLevel}**!`);
     }
     client.setScore.run(score);
   }
-  
+
   //badge
   let user;
   if (message.guild) {
@@ -248,11 +294,17 @@ client.on("message", message => {
   } else if (command === "pointsinfo") {
     client.commands.get("pointsInfo").execute(message, args, score);
   } else if (command === "changepoints") {
-    client.commands.get("changePoints").execute(message, args, client, sql_score);
-  } else if (command === "leaderboard")  {
-    client.commands.get("leaderboard").execute(message, args, sql_score, client);
+    client.commands
+      .get("changePoints")
+      .execute(message, args, client, sql_score);
+  } else if (command === "leaderboard") {
+    client.commands
+      .get("leaderboard")
+      .execute(message, args, sql_score, client);
   } else if (command === "roll") {
-    client.commands.get("roll").execute(message, args, client, sql_score, score);
+    client.commands
+      .get("roll")
+      .execute(message, args, client, sql_score, score);
   } else if (command === "ping") {
     client.commands.get("ping").execute(message, args);
   } else if (command === "speak") {
@@ -269,7 +321,11 @@ client.on("message", message => {
     client.commands.get("viewBadges").execute(message, args, client, sql);
   } else if (command === "allbadges") {
     client.commands.get("allBadges").execute(message, args);
-  } else if (command === "equipbadges" || command === "equipBadge" || command === "equip") {
+  } else if (
+    command === "equipbadges" ||
+    command === "equipBadge" ||
+    command === "equip"
+  ) {
     client.commands.get("equipBadges").execute(message, args, client, sql);
   } else if (command === "addbadges" || command === "addbadge") {
     client.commands.get("addBadges").execute(message, args, client, sql);
@@ -278,17 +334,40 @@ client.on("message", message => {
   } else if (command === "clearbadges") {
     client.commands.get("clearBadges").execute(message, args, client, sql);
   } else if (command === "retrievebadges") {
-    client.commands.get("retrieveBadges").execute(message, args, client, sql)
+    client.commands.get("retrieveBadges").execute(message, args, client, sql);
   } else if (command === "findbadges") {
-    client.commands.get("findBadges").execute(message, args)
-  } else if (command === "badges" || command === "badge" || command === "badgeshelp" || command === "badgehelp") {
+    client.commands.get("findBadges").execute(message, args);
+  } else if (
+    command === "badges" ||
+    command === "badge" ||
+    command === "badgeshelp" ||
+    command === "badgehelp"
+  ) {
     client.commands.get("badges").execute(message, args);
   } else if (command === "merch") {
     client.commands.get("merch").execute(message, args);
   } else if (command === "shop") {
     client.commands.get("shop").execute(message, args, client, sql, sql_score);
-  } else if (command === "happyholidays") {
-    client.commands.get("happyHolidays").execute(message, args, client, sql);
+  } else if (command === "zoom") {
+    client.commands.get("aprilFools").execute(message, args, client, sql);
+  } else if (command === "events" || command === "calendar") {
+    client.commands.get("calendar").execute(message, args, client, sql_calendar);
+  } else if (command === "createevent") {
+    client.commands
+      .get("createEvent")
+      .execute(message, args, client, sql_calendar);
+  } else if (command === "removeevent") {
+    client.commands.get("removeEvent").execute(message, args, client, sql_calendar);
+  } else if (command == "checkcalendar") {
+    client.commands.get("checkCalendar").execute(client, sql_calendar);
+  } else if (command === "promote") {
+    client.commands.get("promote").execute(message, args, client, sql_calendar);
+  } else if (command === "changelog") {
+    client.commands.get("changelog").execute(message, args, client);
+  } else if (command === "anon") {
+    client.commands.get("anon").execute(message, args, client);
+  } else if (command === "givetech") {
+    //client.commands.get("givetech").execute(message,args,client);
   } else {
     message.channel.send("That is not a valid command!");
     return;

@@ -17,7 +17,7 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
     }
@@ -57,7 +57,7 @@ module.exports = {
     let user;
     let user_obj;
     const guild_id = "425866519650631680";
-    const guild = client.guilds.get("425866519650631680");
+    const guild = client.guilds.cache.get("425866519650631680");
     //if no one is mentioned then the user is the one who sent the message
     if (!args.length) {
       user_obj = guild.member(message.author.id);
@@ -98,12 +98,12 @@ module.exports = {
     
     //show them what they have
     //TODO: message different if you call a diff user?
-		const badge_embed = new Discord.RichEmbed()
+		const badge_embed = new Discord.MessageEmbed()
       .setColor(user_obj.displayHexColor)
       .setThumbnail(user_obj.user.displayAvatarURL)
       .setTitle('**BADGE PROFILE**')
       .setDescription('View a user\'s badge profile here. For specific badge info, do `sg!allBadges`. Note that some badges may look different on different platforms.')
-      .addField("**" + adjusted_nickname + "**", "Currently equipped: " + current_badges , true);
+      .addField("**" + adjusted_nickname + "**", "Currently equipped: " + current_badges , false);
     
     for (var i = 0; i < keys.length; i++) {
       if (user[keys[i]] === 0 || user[keys[i]] === null || user[keys[i]] === undefined) {
@@ -131,13 +131,13 @@ module.exports = {
               break;
           }
         }
-        badge_embed.addField("__" + badges_json[keys[i]].emoji + badges_json[keys[i]].name + "__", "Number owned: " + user[keys[i]], false);
+        badge_embed.addField("__" + badges_json[keys[i]].emoji + " " + badges_json[keys[i]].name + "__", "# owned: " + user[keys[i]], true);
       }
       
     }
     rarity_rating = (rarity_rating/number_owned).toFixed(2);
     
-    badge_embed.addField("**OTHER STATS:** ", "__Total # Owned:__ " + number_owned + "   |   __Rarity Rating:__ " + rarity_rating, true);
+    badge_embed.addField("**OTHER STATS:** ", "__Total # Owned:__ " + number_owned + "   |   __Rarity Rating:__ " + rarity_rating, false);
   
     message.channel.send(badge_embed);
   }
