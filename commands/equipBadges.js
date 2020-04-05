@@ -52,13 +52,13 @@ module.exports = {
     let avail_badges = new Array();
     let avail_badges_obj = new Object();
     const guild_id = "425866519650631680";
-    const guild = client.guilds.get("425866519650631680");
+    const guild = client.guilds.cache.get("425866519650631680");
 
     user_obj = guild.member(message.author.id);
     user = client.getBadge.get(message.author.id, guild_id);
 
     //show them what they have
-    const badge_embed = new Discord.RichEmbed()
+    const badge_embed = new Discord.MessageEmbed()
       .setColor("ff4c4c")
       .setTitle("**YOUR UCSD 22 BADGES**")
       .setThumbnail(message.author.avatarURL)
@@ -101,21 +101,21 @@ module.exports = {
     if (number_owned > 0) {
       //now allow for selections:
       //they own at least 1
-      const first_embed = new Discord.RichEmbed()
+      const first_embed = new Discord.MessageEmbed()
         .setColor("ff4c4c")
         .setTitle("**FIRST SLOT**:  " + adjusted_nickname)
         .setDescription(
           "Select which badge you would like to equip in your first slot. Please wait for me to finish adding emotes to select one. If you would like to leave this slot blank (and end the equip process) select the ❌ emoji."
         );
 
-      const second_embed = new Discord.RichEmbed()
+      const second_embed = new Discord.MessageEmbed()
         .setColor("ff4c4c")
         .setTitle("**SECOND SLOT**:  " + adjusted_nickname)
         .setDescription(
           "Select which badge you would like to equip in your second slot. Please wait for me to finish adding emotes to select one. If you would like to leave this slot blank (and end the equip process) select the ❌ emoji."
         );
 
-      const third_embed = new Discord.RichEmbed()
+      const third_embed = new Discord.MessageEmbed()
         .setColor("ff4c4c")
         .setTitle("**THIRD SLOT**  " + adjusted_nickname)
         .setDescription(
@@ -134,7 +134,7 @@ module.exports = {
                 setTimeout(function() {
                   sent.react(avail_badges[i]);
                   resolve();
-                }, Math.random() * 1000)
+                }, 1000)
               )
           );
         }
@@ -212,7 +212,7 @@ module.exports = {
                       setTimeout(function() {
                         sent.react(avail_badges[i]);
                         resolve();
-                      }, Math.random() * 1000)
+                      }, 1000)
                     )
                 );
               }
@@ -289,7 +289,7 @@ module.exports = {
                             setTimeout(function() {
                               sent.react(avail_badges[i]);
                               resolve();
-                            }, Math.random() * 1000)
+                            }, 1000)
                           )
                       );
                     }

@@ -1,17 +1,17 @@
 module.exports = {
-  name: "happyHolidays",
-  description: "Happy holidays!",
+  name: "aprilFools",
+  description: "Happy April Fools!",
   execute(message, args, client, sql) {
     function addBadges(id) {
       var statement =
-        "UPDATE badges SET happy_holidays = 1 WHERE id = '" + id + "';";
+        "UPDATE badges SET april_fools = 1 WHERE id = '" + id + "';";
       console.log(statement);
       client.addBadge = sql.prepare(statement);
       client.addBadge.run();
     }
 
     message.channel.send(
-      "***Happy Holidays to you too, <@" + message.author.id + ">!! ***"
+      "***ｚｏｏｍ ｉｓ ｌｏｖｅ． ｚｏｏｍ ｉｓ ｌｉｆｅ．Don't you agree, <@" + message.author.id + ">? ***"
     );
 
     //Does that user have the badge already?
@@ -26,16 +26,16 @@ module.exports = {
     }
 
     let user_id = `${message.guild.id}-${message.author.id}`;
-    let holiday_badge = user["happy_holidays"];
+    let holiday_badge = user["april_fools"];
 
     if (holiday_badge >= 1) {
       message.channel.send(
-        "I'd love to give you more badges, but you've already gotten this one! 🎄"
+        "I'd love to give you more badges, but you've already gotten this one! 🃏"
       );
       return;
     } else {
       message.channel.send(
-        "❄️ Have a fantastic winter break! **🎁 My present to you is the __Happy Holidays badge__: 🎄**. (Do `sg!equip` to wear it in your nickname)"
+        "🃏 **Welcome to Zoom University: 🃏**. (Do `sg!equip` and select the emoji to wear it in your nickname) *April Fools!*"
       );
       addBadges(user_id);
       return;

@@ -8,14 +8,13 @@ module.exports = {
     
     //CLEAR BADGE removes all badges to 0
     function clearBadge(columnName, id) {
+      const guild_id = "425866519650631680"
       var statement =
         "UPDATE badges SET " +
         columnName +
         " = " +
         null +
-        ' WHERE id = "' +
-        id +
-        '";';
+        ' WHERE user = ' + id + " AND guild = " + guild_id;
       console.log(statement);
       client.removeBadges = sql.prepare(statement);
       client.removeBadges.run();
@@ -32,7 +31,7 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
     }
@@ -48,7 +47,7 @@ module.exports = {
     
     //Check if an ID or mention was passed in
     //parse the members to receive badges
-    let guild = client.guilds.get("425866519650631680");
+    let guild = client.guilds.cache.get("425866519650631680");
     var mentioned = message.mentions.members.first();
     if (mentioned === undefined) {
       message.channel.send("None mentioned, looking for ids instead...");
@@ -70,7 +69,7 @@ module.exports = {
     
     
     for (var i = 0; i < keys.length; i++) {
-      let id = `${message.guild.id}-${user_id}`
+      let id = `${user_id}`
       clearBadge(keys[i], id);
     }
     message.channel.send("Badges cleared.");

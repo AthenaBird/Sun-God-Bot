@@ -8,17 +8,15 @@ module.exports = {
     //TODO rename this so its actually subtract lol
     //ADDBADGES function allows for the sql updating
     function removeBadges(columnName, numberBadges, id) {
+      const guild_id = "425866519650631680"
       var statement =
         "UPDATE badges SET " +
         columnName +
         " = " +
         numberBadges +
-        ' WHERE id = "' +
-        id +
-        '";';
+        ' WHERE user = ' + id + " AND guild = " + guild_id;
       console.log(statement);
-      client.removeBadges = sql.prepare(statement);
-      client.removeBadges.run();
+      sql.prepare(statement).run();
     }
 
     //GET USER function for getting ID
@@ -32,7 +30,7 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
     }
@@ -71,7 +69,7 @@ module.exports = {
     //TODO: user has not sent a badge
 
     //parse the members to receive badges
-    let guild = client.guilds.get("425866519650631680");
+    let guild = client.guilds.cache.get("425866519650631680");
     var mentioned = message.mentions.members.first();
     if (mentioned === undefined) {
       message.channel.send("None mentioned, looking for ids instead...");
@@ -112,7 +110,7 @@ module.exports = {
             client.setBadge.run(user);
           }
 
-          let user_id = `${message.guild.id}-${id_user.id}`;
+          let user_id = `${id_user.id}`;
 
           let prev_amount = user[badge_to_remove];
           if (
@@ -170,7 +168,7 @@ module.exports = {
           client.setBadge.run(user);
         }
 
-        let user_id = `${message.guild.id}-${mentioned_user.id}`;
+        let user_id = `${mentioned_user.id}`;
 
         let prev_amount = user[badge_to_remove];
         if (prev_amount === null || prev_amount === NaN || prev_amount === 0) {

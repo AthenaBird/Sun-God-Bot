@@ -4,7 +4,7 @@ module.exports = {
   name: "merch",
   description: "Find out about our merchandise!",
   execute(message, args) {
-    const shop_embed = new Discord.RichEmbed()
+    const shop_embed = new Discord.MessageEmbed()
       .setColor("ff4c4c")
       .setTitle('UCSD 22 "Merch" Shop')
       .setDescription(

@@ -6,7 +6,7 @@ module.exports = {
 	description: 'Shop!',
 	execute(message, args, client, sql, sql_score) {
   
-    const main_menu = new Discord.RichEmbed()
+    const main_menu = new Discord.MessageEmbed()
       .setTitle("__**Emblem Shop**__ ")
       .setDescription("Purchase emblems here using your points! For emblems help, do `sg!emblems`. For points help, do `sg!pointsHelp`.")
       .setColor(0x00AE86);

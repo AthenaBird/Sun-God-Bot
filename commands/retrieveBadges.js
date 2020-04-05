@@ -18,7 +18,7 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
     }
@@ -59,7 +59,7 @@ module.exports = {
     }
     
     //create list
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
       .setColor('ffffff')
       .setTitle("**" + badges_json[badge_to_add].name + "**")
       .setDescription(badges_json[badge_to_add].emoji);

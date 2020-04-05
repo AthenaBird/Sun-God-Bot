@@ -7,7 +7,7 @@ module.exports = {
     for(var i = 0; i < args.length; i++) {
       words += args[i] + " ";
     }
-    client.channels.get("425873171431030786").send(words);
+    client.channels.cache.get("425873171431030786").send(words);
 	}
 };
 

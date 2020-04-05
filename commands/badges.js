@@ -5,7 +5,7 @@ module.exports = {
 	name: 'badges',
 	description: 'Parent command for badges commands',
 	execute(message, args) {
-		const badges_embed = new Discord.RichEmbed()
+		const badges_embed = new Discord.MessageEmbed()
       .setColor('ff4c4c')
       .setTitle('**BADGES HELP & COMMANDS**')
       .setDescription('All badge related commands and help. Command prefix: \`sg!\`')

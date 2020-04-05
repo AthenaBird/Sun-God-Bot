@@ -7,7 +7,7 @@ module.exports = {
 		const top10 = sql_score.prepare("SELECT * FROM scores WHERE guild = ? ORDER BY points DESC LIMIT 10;").all(message.guild.id);
 
     // Now shake it and show it! (as a nice embed, too!)
-    const embed = new Discord.RichEmbed()
+    const embed = new Discord.MessageEmbed()
       .setTitle("__**Leaderboard**__ (as of 11/10/19 [BETA])")
       .setAuthor(client.user.username, client.user.avatarURL)
       .setDescription("Our top 10 points leaders!")

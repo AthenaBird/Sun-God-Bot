@@ -5,7 +5,7 @@ module.exports = {
 	name: 'verify',
 	description: 'Verifies a new member by giving them the roles and the name!',
 	execute(message, args, client) {
-     message.delete(100);
+     message.delete({ timeout: 100, reason: 'It had to be done.' });
     //Helper function
     function getUserID(mention) {
       if (!mention) return;
@@ -17,7 +17,7 @@ module.exports = {
         mention = mention.slice(1);
       }
 
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
 
       return guild.member(mention);
       
@@ -28,7 +28,7 @@ module.exports = {
       return;
     } 
     
-    if(!(message.member.roles.find(r => r.name === "Kages 👑") || message.member.roles.find(r => r.name === "Moderators 🛡️"))) {
+    if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️"))) {
       message.channel.send("You are not authorized to use this command! Please hold tight as a moderator will verify you soon.");
       return;
     }
@@ -36,7 +36,7 @@ module.exports = {
     
     const filter = m => m.author.id === message.author.id;
     const collector = message.channel.createMessageCollector(filter, {
-      maxMatches: 5,
+      max: 5,
       time: 60000
     });
    
@@ -46,7 +46,6 @@ module.exports = {
       global.lastMessageID = sent.id;
       console.log(global.lastMessageID);
     });
-  
 
    
     let completed = true;
@@ -83,28 +82,28 @@ module.exports = {
       const class_other_role_name = "assumed 22";
 
       //THis could be better done by actually finding the role IDs but im lazy
-      let revelle_role = message.guild.roles.find(
+      let revelle_role = message.guild.roles.cache.find(
         role => role.name === "Revelle"
       );
-      let muir_role = message.guild.roles.find(role => role.name === "Muir");
-      let marshall_role = message.guild.roles.find(
+      let muir_role = message.guild.roles.cache.find(role => role.name === "Muir");
+      let marshall_role = message.guild.roles.cache.find(
         role => role.name === "Marshall"
       );
-      let warren_role = message.guild.roles.find(
+      let warren_role = message.guild.roles.cache.find(
         role => role.name === "Warren"
       );
-      let erc_role = message.guild.roles.find(role => role.name === "ERC");
-      let sixth_role = message.guild.roles.find(role => role.name === "Sixth");
-      let nonUCSD_role = message.guild.roles.find(
+      let erc_role = message.guild.roles.cache.find(role => role.name === "ERC");
+      let sixth_role = message.guild.roles.cache.find(role => role.name === "Sixth");
+      let nonUCSD_role = message.guild.roles.cache.find(
         role => role.name === "Non UCSD"
       );
-      let class_23_role = message.guild.roles.find(
+      let class_23_role = message.guild.roles.cache.find(
         role => role.name === "Zoomies"
       );
-      let class_older_role = message.guild.roles.find(
+      let class_older_role = message.guild.roles.cache.find(
         role => role.name === "Boomies"
       );
-      let verified_role = message.guild.roles.find(
+      let verified_role = message.guild.roles.cache.find(
         role => role.name === "Verified"
       );
 
@@ -112,7 +111,7 @@ module.exports = {
       var college_name;
       var class_name;
       
-      let guild = client.guilds.get("425866519650631680");
+      let guild = client.guilds.cache.get("425866519650631680");
       let user;
       var mentioned = info[0].mentions.members.first();
       
@@ -224,7 +223,7 @@ module.exports = {
           roles.push(verified_role);
 
           //verify role and set nickname
-          user.setRoles(roles).catch(console.error);
+          user.roles.set(roles).catch(console.error);
           user.setNickname(
             info[1].content +
               spacer +
@@ -235,11 +234,11 @@ module.exports = {
           //TODO A way to do confirmations would be nice
           message.channel.send(
             "Verified: **" +
-              info[1] +
+              info[1].content +
               spacer +
-              info[2] +
+              info[2].content +
               spacer +
-              info[3] +
+              info[3].content +
               "** under **" +
               college_name +
               "** and in the class of **" +
@@ -248,25 +247,27 @@ module.exports = {
           );
           //keeping verify clean
           
-          for(var i =0; i< info.length; i++){
+          /*for(var i =0; i< info.length; i++){
           
-             message.channel.fetchMessage(info[i].id)
-            .then(message => message.delete(2000))
+             message.channel.cache.fetch(info[i].id)
+            .then(message => message.delete({ timeout: 2000, reason: 'It had to be done.' }))
             .catch(console.error);
             
           }
-           message.channel.fetchMessage(global.lastMessageID)
-            .then(message => message.delete(2000))
+           message.channel.cache.fetch(global.lastMessageID)
+            .then(message => message.delete({ timeout: 2000, reason: 'It had to be done.' }))
             .catch(console.error);
+          */
+          
           //Welcome Message       
-          client.channels.get("425873171431030786").send("***🎉🎉🎉  Welcome <@" + user.id + "> to our server!  🎉🎉🎉*** \n Please check out " 
-                                                         + message.guild.channels.find(channel => channel.name === "roles").toString() 
+          client.channels.cache.get("425873171431030786").send("***🎉🎉🎉  Welcome <@" + user.id + "> to our server!  🎉🎉🎉*** \n Please check out " 
+                                                         + message.guild.channels.cache.find(channel => channel.name === "roles").toString() 
                                                          + " to get roles and introduce yourself in " 
-                                                         + message.guild.channels.find(channel => channel.name === "profiles").toString() + "!" ); 
+                                                         + message.guild.channels.cache.find(channel => channel.name === "profiles-usernames").toString() + "!" ); 
         
           
           //DM the user about roles
-          const embed = new Discord.RichEmbed()
+          const embed = new Discord.MessageEmbed()
             .setColor("ff4c4c")
             .setAuthor(info[1].content + spacer + info[2].content + spacer + info[3].content)
             .setTitle("**Welcome in! You have been verified into UCSD 22!**")
