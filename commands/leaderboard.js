@@ -15,7 +15,7 @@ module.exports = {
     
     var counter = 1;
     for(const data of top10) {
-      embed.addField("**" + counter + ") " + client.users.get(data.user).tag + "**", `${data.points} points (level ${data.level})`);
+      embed.addField("**" + counter + ") " + client.users.cache.get(data.user).tag + "**", `${data.points} points (level ${data.level})`);
       counter++;
     }
     return message.channel.send({embed});

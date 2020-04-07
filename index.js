@@ -368,6 +368,9 @@ client.on("message", message => {
     client.commands.get("anon").execute(message, args, client);
   } else if (command === "givetech") {
     //client.commands.get("givetech").execute(message,args,client);
+  } else if (command === "topic") {
+    client.commands.get("topic").execute(message, args);  
+  
   } else {
     message.channel.send("That is not a valid command!");
     return;

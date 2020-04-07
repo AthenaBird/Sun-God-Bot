@@ -5,6 +5,9 @@ module.exports = {
 	description: 'Non-callable command to check calendar for any events; if so, any with rsvp',
 	execute(client, sql_calendar) {
     
+    const HOURS = 1;
+    const EVENT_WINDOW = HOURS * 60 * 60 * 1000;
+    
 		//client.channels.get("637772235494522889").send("Time check complete!");
     var calendar = sql_calendar.prepare("SELECT * FROM calendar ORDER BY start_time ASC").all();
     
@@ -84,7 +87,7 @@ module.exports = {
         //event has passed
         console.log("Event passed");
         continue;
-      } else if (item.start_time - (c_time.getTime() - 28800000) > 86400000){
+      } else if (item.start_time - (c_time.getTime() - 28800000) > EVENT_WINDOW){
         //greater than 24 hours
         console.log("Event notification window too far");
         continue;
@@ -125,7 +128,7 @@ module.exports = {
               const going_embed = new Discord.MessageEmbed()
                 .setColor("ff4c4c")
                 .setTitle("**RSVP Notification: **" + item.name)
-                .setDescription("**This is a notification about the event occuring in less than 24 hours.**")
+                .setDescription("**This is a notification about the event occuring in **" + HOURS +  "** hour(s).**")
                 .addField("__EVENT DESCRIPTION__", item.description, false)
                 .addField("__HOST (Direct questions to)__", item.host, false)
                 .addField("__TIME__", convert_time(s_time, e_time), false)
@@ -144,7 +147,15 @@ module.exports = {
                   continue;
               }
               arr_interest_user.push(user[1].id);
-              client.users.cache.get(user[1].id).send("Hello, you are receiving this RSVP reminder message because you selected INTERESTED on the event. (This is just a test message. You should only be receiving this once unless you chose GOING as well.)");
+              const interested_embed = new Discord.MessageEmbed()
+                .setColor("ff4c4c")
+                .setTitle("**RSVP Notification: **" + item.name)
+                .setDescription("**This is a notification about the event occuring in **" + HOURS +  "** hour(s).**")
+                .addField("__EVENT DESCRIPTION__", item.description, false)
+                .addField("__HOST (Direct questions to)__", item.host, false)
+                .addField("__TIME__", convert_time(s_time, e_time), false)
+                .addField("__LOCATION__", item.location, false)
+              client.users.cache.get(user[1].id).send(interested_embed);
             }
             
           });

@@ -17,7 +17,7 @@ module.exports = {
     } else if(args[0] === '-dc') {
       type = "**DELETED CHANNEL**";
     } else if(args[0] === '-nc') {
-      type = "**NEW SG COMMAND**";
+      type = "**NEW COMMAND**";
     } else if(args[0] === '-nb') {
       type = "**ADDED BOT**";
     } else if(args[0] === '-mb') {
