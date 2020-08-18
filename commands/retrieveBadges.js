@@ -1,12 +1,17 @@
 const Discord = require("discord.js");
 const config = require("../config.json");
 const badges_json = require("../badges.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-  name: "retrieveBadges",
+  name: "retrievebadges",
   description: "Retrieve all users who own this badge",
-  execute(message, args, client, sql) {
-    
+  category: "Badges",
+  args: true,
+  usage: '<badge ID> <mentions/user IDs>',
+  execute(message, args) {
+    const client = message.client;
     //function I'll need later
     function getUserID(mention) {
       if (!mention) return;

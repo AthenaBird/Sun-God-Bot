@@ -278,7 +278,18 @@
     "levelable": false,
     "level": 1,
     "rarity": "Common"
+  },
+  
+  "movie_night": {
+    "name": "Movie Night!",
+    "emoji": "🍿",
+    "description": "Joined for a movie night!",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
   }
+  
   
   
 }

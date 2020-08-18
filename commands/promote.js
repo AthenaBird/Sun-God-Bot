@@ -3,7 +3,10 @@ const badges_json = require("../badges.json");
 
 module.exports = {
 	name: 'promote',
-	description: 'Promote an event or anything you would like thru our special announcements channel!',
+	description: 'Promote an event or anything you would like thru our special #bulletin channel! WIP',
+  category: "Events/Calendar",
+  args: false,
+  usage: '',
 	execute(message, args) {
     
 		const promote_1 = new Discord.MessageEmbed()

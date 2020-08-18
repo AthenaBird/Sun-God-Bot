@@ -3,7 +3,10 @@ const badges = require("../badges.json");
 
 module.exports = {
 	name: 'badges',
-	description: 'Parent command for badges commands',
+	description: 'Parent help command for badges commands',
+  category: "Badges",
+  args: false,
+  usage: '',
 	execute(message, args) {
 		const badges_embed = new Discord.MessageEmbed()
       .setColor('ff4c4c')

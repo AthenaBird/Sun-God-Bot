@@ -2,8 +2,11 @@ const badges = require("../badges.json");
 const Discord = require("discord.js");
 
 module.exports = {
-  name: "allBadges",
-  description: "Displays all available badges and their details.",
+  name: "allbadges",
+  description: "Displays all available badges and their details. If a badge is not listed, it may be a purchased one (see `sg!help points`)",
+  category: "Badges",
+  args: false,
+  usage: '',
   execute(message, args) {
     const keys = Object.keys(badges);
 

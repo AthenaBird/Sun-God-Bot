@@ -1,10 +1,16 @@
 const badges_json = require("../badges.json");
 const config = require("../config.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-  name: "removeBadges",
-  description: "Removes users badges as admins",
-  execute(message, args, client, sql) {
+  name: "removebadges",
+  description: "**<ADMIN COMMAND>** Removes users badges as admins.",
+  category: "Badges",
+  args: true,
+  usage: '<badge ID> <mentions/user IDs>',
+  execute(message, args) {
+    const client = message.client;
     //TODO rename this so its actually subtract lol
     //ADDBADGES function allows for the sql updating
     function removeBadges(columnName, numberBadges, id) {

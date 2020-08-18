@@ -1,10 +1,16 @@
 const Discord = require("discord.js");
 const badges_json = require("../badges.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-	name: 'clearBadges',
-	description: 'Deletes all the badges from a user',
-	execute(message, args, client, sql) {
+	name: 'clearbadges',
+	description: '**<ADMIN COMMAND>** Deletes all the badges from a user.',
+  category: "Badges",
+  args: true,
+  usage: '<user mention>',
+	execute(message, args) {
+    const client = message.client;
     
     //CLEAR BADGE removes all badges to 0
     function clearBadge(columnName, id) {

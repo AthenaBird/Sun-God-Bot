@@ -2,8 +2,11 @@ const badges_json = require("../badges.json");
 const config = require("../config.json");
 
 module.exports = {
-	name: 'findBadges',
-	description: 'Tells admin the id of a badge',
+	name: 'findbadges',
+	description: '**<ADMIN COMMAND>** Tells admin the id of a badge.',
+  category: "Badges",
+  args: true,
+  usage: '<badge emote>',
 	execute(message, args) {
 		
     //Variables and constants
