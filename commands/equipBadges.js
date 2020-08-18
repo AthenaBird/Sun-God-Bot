@@ -1,10 +1,18 @@
 const Discord = require("discord.js");
 const badges_json = require("../badges.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-  name: "equipBadges",
-  description: "Allows the user to equip their badges",
-  execute(message, args, client, sql) {
+  name: "equipbadges",
+  aliases: ["equip"],
+  description: "EQUIP your badges in your nickname, for up to 3 badges. To find out how to earn badges, see `sg!allbadges` or `sg!shop`. *Note: if the command crashes, please let me finish adding the reactions before selecting one.*",
+  category: "Badges",
+  args: false,
+  usage: '',
+  execute(message, args) {
+    const client = message.client;
+    
     const keys = Object.keys(badges_json);
 
     //filters out the selected "val" from the array

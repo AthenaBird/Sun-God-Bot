@@ -1,9 +1,17 @@
 const Discord = require("discord.js");
 
 module.exports = {
-	name: 'checkCalendar',
+	name: 'checkcalendar',
 	description: 'Non-callable command to check calendar for any events; if so, any with rsvp',
+  category: "Events/Calendar",
+  args: false,
+  usage: '',
 	execute(client, sql_calendar) {
+    
+    
+    const HOURS = 1;
+    const DAYLIGHT = 1;
+    const EVENT_WINDOW = HOURS * 60 * 60 * 1000 + (DAYLIGHT * 3600000);
     
 		//client.channels.get("637772235494522889").send("Time check complete!");
     var calendar = sql_calendar.prepare("SELECT * FROM calendar ORDER BY start_time ASC").all();
@@ -22,24 +30,40 @@ module.exports = {
       var e_hour = end_time.getHours();
       var e_minutes = end_time.getMinutes();
       
+      if(s_minutes < 10) {
+        s_minutes = `0${s_minutes}`
+      }
+      
+      if(e_minutes < 10) {
+        e_minutes = `0${e_minutes}`
+      }
+      
+      // really should placeholder this
       if (s_hour <= 11) {
-        s_ampm_time = `${s_hour}:${s_minutes} AM}`;
+        if(s_hour == 10 || s_hour == 11) {
+          s_ampm_time = `${s_hour}:${s_minutes} AM}`;
+        } else {
+          s_ampm_time = `0${s_hour}:${s_minutes} AM}`;
+        }
       } else if (s_hour == 12) {
         s_ampm_time = `${s_hour}:${s_minutes} PM}`;
       } else {
-        var pm_time = s_hour -12;
-        s_ampm_time = `${pm_time}:${s_minutes} PM`;
+        var s_pm_time = s_hour -12;
+        s_ampm_time = `${s_pm_time}:${s_minutes} PM`;
       }
       
       if (e_hour <= 11) {
-        e_ampm_time = `${e_hour}:${e_minutes} AM}`;
+        if(e_hour == 10 || e_hour == 11) {
+          e_ampm_time = `${e_hour}:${e_minutes} AM}`;
+        } else {
+          e_ampm_time = `0${e_hour}:${e_minutes} AM}`;
+        }
       } else if (e_hour == 12) {
         e_ampm_time = `${e_hour}:${e_minutes} PM}`;
       } else {
-        var pm_time = s_hour -12;
-        e_ampm_time = `${pm_time}:${e_minutes} PM`;
+        var e_pm_time = e_hour - 12;
+        e_ampm_time = `${e_pm_time}:${e_minutes} PM`;
       }
-      
       
       switch(day) {
         case 0:
@@ -82,39 +106,48 @@ module.exports = {
       var c_time = new Date();
       if (c_time.getTime() - 28800000 > item.start_time) {
         //event has passed
-        console.log("Event passed");
+        console.log("Event passed: " + item.id + " " + item.name);
         continue;
-      } else if (item.start_time - (c_time.getTime() - 28800000) > 86400000){
+      } 
+      else if (item.start_time - (c_time.getTime() - 28800000) > EVENT_WINDOW){
         //greater than 24 hours
-        console.log("Event notification window too far");
+        console.log("Event notification window too far: " + item.id + " " + item.name);
         continue;
-      } else if (item.notify !== 1) {
-        //notify is OFF
-        //console.log(item.id);
-        //console.log(item.notify);
-        console.log("Event notifications are off");
+      } 
+      else if (item.notify !== 1) {
+        console.log("Event notifications are off: " + item.id + " " + item.name + " " + item.notify);
         continue;
-      } else {
+      } 
+      else {
+        
+        console.log("NOTIFYING USERS: " + item.id + " " + item.name);
         
         let guild = client.guilds.cache.get("425866519650631680");
         let channel = client.channels.cache.get("589715402490118154");
         
-        var message = channel.messages.fetch(item.id).then(msg => {
+        var notif_embed = new Discord.MessageEmbed()
+                .setColor("ff4c4c")
+                .setTitle("**RSVP Notification: **" + item.name)
+                .setDescription("**This is a notification about the event occuring in **" + HOURS +  "** hour(s).**")
+                .addField("__EVENT DESCRIPTION__", item.description, false)
+                .addField("__HOST (Direct questions to)__", item.host, false)
+                .addField("__TIME__", convert_time(s_time, e_time), false)
+                .addField("__LOCATION__", item.location, false);
         
-          if(msg.partial) {
-            msg.fetch().then(full_msg => {
-              console.log("This is considered a partial message");
-              client.users.cache.get("270415554995552256").send("Parial juice!");
-            })
-          } 
+        //now set notify to off
+        const statement = "UPDATE calendar SET notify = 0 WHERE id = " + item.id;
+        client.setNotify = sql_calendar.prepare(statement);
+        console.log(statement);
+        client.setNotify.run();
+        
+        var message = channel.messages.fetch(item.id).then(msg => {
           
           //check for the reax
-          //console.log(message.reactions.filter(a => a.emoji.name == '☑️').map(m => m.users)[0]);
-          //console.log(message);
+
           var arr_going_user = [];
-          console.log(msg.reactions.cache.get('☑️').users);
+          //console.log(msg.reactions.cache.get('☑️').users);
           //console.log(message.reactions.cache.get('471374617337135134'));
-          const going_userReactions = msg.reactions.cache.get('☑️').users.fetch().then(fetched => {
+          var going_userReactions = msg.reactions.cache.get('☑️').users.fetch().then(fetched => {
             for (var user of fetched) {
               if (user[1].id === "620850437251399681") {
                 continue;
@@ -122,40 +155,46 @@ module.exports = {
               
               arr_going_user.push(user[1].id);
               
-              const going_embed = new Discord.MessageEmbed()
+              /*var going_embed = new Discord.MessageEmbed()
                 .setColor("ff4c4c")
                 .setTitle("**RSVP Notification: **" + item.name)
-                .setDescription("**This is a notification about the event occuring in less than 24 hours.**")
+                .setDescription("**This is a notification about the event occuring in **" + HOURS +  "** hour(s).**")
                 .addField("__EVENT DESCRIPTION__", item.description, false)
                 .addField("__HOST (Direct questions to)__", item.host, false)
                 .addField("__TIME__", convert_time(s_time, e_time), false)
-                .addField("__LOCATION__", item.location, false)
-              client.users.cache.get(user[1].id).send(going_embed);
+                .addField("__LOCATION__", item.location, false) */
+              
+              client.users.cache.get(user[1].id).send(notif_embed);
+              
             }
             
             
           });
-         // console.log(going_userReactions);
 	        
           var arr_interest_user = [];
-          const interest_userReactions = msg.reactions.cache.get("🔵").users.fetch().then(fetched => {
+          var interest_userReactions = msg.reactions.cache.get("🔵").users.fetch().then(fetched => {
             for (var user of fetched) {
               if (user[1].id === "620850437251399681") {
                   continue;
               }
+              
               arr_interest_user.push(user[1].id);
-              client.users.cache.get(user[1].id).send("Hello, you are receiving this RSVP reminder message because you selected INTERESTED on the event. (This is just a test message. You should only be receiving this once unless you chose GOING as well.)");
+              
+              /*var interested_embed = new Discord.MessageEmbed()
+                .setColor("ff4c4c")
+                .setTitle("**RSVP Notification: **" + item.name)
+                .setDescription("**This is a notification about the event occuring in **" + HOURS +  "** hour(s).**")
+                .addField("__EVENT DESCRIPTION__", item.description, false)
+                .addField("__HOST (Direct questions to)__", item.host, false)
+                .addField("__TIME__", convert_time(s_time, e_time), false)
+                .addField("__LOCATION__", item.location, false)*/
+              
+              client.users.cache.get(user[1].id).send(notif_embed);
+              
             }
             
           });
-          
-          
-          //now set notify to off
-          const statement = "UPDATE calendar SET notify = 0 WHERE id = " + item.id;
-          client.setNotify = sql_calendar.prepare(statement);
-          console.log(statement);
-          client.setNotify.run();
-          
+                   
       
         });
       }

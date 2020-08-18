@@ -2,8 +2,14 @@ const Discord = require("discord.js");
 
 module.exports = {
 	name: 'changelog',
-	description: 'Pong!',
-	execute(message, args, client) {
+	description: '**<ADMIN COMMAND>**: post changes to the #changelog channel. \n\n__FLAGS:__ \n-cc CREATED CHANNEL \n-mc MODIFIED CHANNEL' +  
+    '\n -dc DELETED CHANNEL \n -nc NEW COMMAND \n -nb ADDED BOT \n -mb MODIFIED BOT \n -ar ADDED ROLE \n <> OTHER CHANGE',
+  category: "Utility",
+  args: true,
+  usage: '<-flag> <changelog info>',
+	execute(message, args) {
+    
+    const client = message.client;
     
     if (message.author.id !== "433774411682938890") return;
     
@@ -17,11 +23,13 @@ module.exports = {
     } else if(args[0] === '-dc') {
       type = "**DELETED CHANNEL**";
     } else if(args[0] === '-nc') {
-      type = "**NEW SG COMMAND**";
+      type = "**NEW COMMAND**";
     } else if(args[0] === '-nb') {
       type = "**ADDED BOT**";
     } else if(args[0] === '-mb') {
       type = "**MODIFIED BOT**";
+    } else if(args[0] === '-ar') {
+      type = "**ADDED ROLE**"
     } else {
       type = "**Other Change**"
     }

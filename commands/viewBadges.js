@@ -1,11 +1,17 @@
 const Discord = require("discord.js");
 const badges_json = require("../badges.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-	name: 'viewBadges',
+	name: 'viewbadges',
 	description: 'Displays the user\'s badges (or if user mentioned)',
-	execute(message, args, client, sql) {
+  category: "Badges",
+  args: false,
+  usage: '<optional: user mention>',
+	execute(message, args) {
     
+    const client = message.client;
     //GET USER function for getting ID
     function getUserID(mention) {
       if (!mention) return;

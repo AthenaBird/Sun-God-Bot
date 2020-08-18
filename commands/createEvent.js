@@ -1,10 +1,16 @@
 const Discord = require("discord.js");
+const SQLite = require("better-sqlite3");
+const sql_events = new SQLite("./databases/calendar.sqlite");
 
 module.exports = {
-	name: 'createEvent',
-	description: 'Creates an event!',
-	execute(message, args, client, sql_events) {
+	name: 'createevent',
+	description: 'Create a discord event that will be posted to #events-giveaways. *Note: remember to list times in HH:MM AM|PM format with proper spacing, ie. 09:00 PM or 11:00 AM.*',
+  category: "Event/Calendar",
+  args: true,
+  usage: '<event title>',
+	execute(message, args) {
     
+    const client = message.client;
     const msg_url = "https://discordapp.com/channels/425866519650631680/589715402490118154/"
 
     //ADD EVENT
@@ -150,10 +156,10 @@ module.exports = {
     }
     
     //if missing permissions
-    if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️"))) {
+    /* if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️"))) {
       message.channel.send("You are not authorized to use this command!");
       return;
-    }
+    } */
     
     let event_name = "";
     
@@ -226,6 +232,7 @@ module.exports = {
       e_hour = arr_etime[0];
       e_minute = arr_etime[1];
       
+      //TODO location assumed to be one word? crashed earlier on more than one word
       let location = arr_collec[4].toString();
       
       console.log(month + day + year);
@@ -249,7 +256,7 @@ module.exports = {
       } else if (Number(s_hour) > Number(e_hour)) {
         message.channel.send("Invalid start or end time (check bounds). Command exiting...");
         return;
-      }
+      } 
       
       message.channel.send("To confirm, __" + event_name + "__ will be: \n at: **" + location + "** \n at **" +
                            month + "/" + day + "/" + year + "** starting at **" + s_hour + ":" + s_minute + "** to **" 
@@ -293,7 +300,7 @@ module.exports = {
           if (collected_confirm === "✅") {
             
              //ASK for NOTIFY or not
-            message.channel.send("\n **Should users be notified 24 hours before? Select ✅ or ❌**").then(sent => {
+            message.channel.send("\n **Should users be notified an hour before? Select ✅ or ❌**").then(sent => {
             
               var arr_notify = ["✅", "❌"];
               var collected_notif; 

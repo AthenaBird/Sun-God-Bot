@@ -1,8 +1,15 @@
+const SQLite = require("better-sqlite3");
+const sql_calendar = new SQLite("./databases/calendar.sqlite");
+
 module.exports = {
-	name: 'removeEvent',
-	description: 'Removes event!',
-	execute(message, args, client, sql_calendar) {
+	name: 'removeevent',
+	description: '**<ADMIN COMMAND**> Removes event from database.',
+  category: "Events/Calendar",
+  args: true,
+  usage: '<event ID>',
+	execute(message, args, sql_calendar) {
     
+    const client = message.client;
     if(!(message.member.roles.find(r => r.name === "Kages 👑") || message.member.roles.find(r => r.name === "Moderators 🛡️"))) {
       message.channel.send("You are not authorized to use this command!");
       return;

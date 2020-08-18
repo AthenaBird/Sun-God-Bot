@@ -3,8 +3,12 @@ const config = require("../config.json");
 
 module.exports = {
 	name: 'verify',
-	description: 'Verifies a new member by giving them the roles and the name!',
-	execute(message, args, client) {
+	description: '**<ADMIN COMMAND>** Verifies a new member by giving them the roles and the name. Note: default class is 22.',
+  category: "Utility",
+  args: false,
+  usage: '',
+	execute(message, args) {
+    const client = message.client;
      message.delete({ timeout: 100, reason: 'It had to be done.' });
     //Helper function
     function getUserID(mention) {
@@ -32,7 +36,7 @@ module.exports = {
       message.channel.send("You are not authorized to use this command! Please hold tight as a moderator will verify you soon.");
       return;
     }
-    
+    let verifier = message.author; 
     
     const filter = m => m.author.id === message.author.id;
     const collector = message.channel.createMessageCollector(filter, {
@@ -43,21 +47,34 @@ module.exports = {
     //store the message ID to be deleted later
     message.reply("Please send in the following order (seperate messages): mention the user/the user ID, name, major, college, and class (`22`, `23`, or `older`). Type cancel to cancel the action.")
       .then(sent => { // 'sent' is that message you just sent
-      global.lastMessageID = sent.id;
-      console.log(global.lastMessageID);
+      sent = client.user.lastMessage;
+      //console.log(client.user.lastMessageID);
+      //console.log(sent);
     });
-
-   
+    
+    let d_msg = client.user.lastMessage;
+    console.log('verify: '+d_msg);
+    
     let completed = true;
-
+    let cancelled = false; 
+    
     collector.on("collect", m => {
       if (m.content === "cancel") {
         completed = false;
-        message.channel.send("Action cancelled by user.");
+        message.channel.send("Action cancelled by user.").then(d_msg => {d_msg.delete({timeout : 15000})});
         collector.stop();
+        info = collector.collected.array(); 
+           for(var i =0; i< info.length; i++){
+            info[i].delete({ timeout: 4000, reason: 'It had to be done.' }).catch(console.error);
+          }
+          //deletes the bots last message
+          client.user.lastMessage.delete({ timeout: 1000, reason: 'It had to be done.' }).catch(console.error);
+          
+        return; 
+        
       } else {
         m.react("\u2705");
-        console.log(`Collected ${m.content}`);
+        console.log('verify: '+`Collected ${m.content}`);
       }
     });
    
@@ -65,8 +82,8 @@ module.exports = {
     let spacer = " | ";
 
     collector.on("end", collected => {
-      console.log(`Collected ${collected.size} items`);
-      console.log(collector.collected.array().toString());
+      console.log('verify: '+ `Collected ${collected.size} items`);
+      console.log('verify: '+collector.collected.array().toString());
       info = collector.collected.array();
 
       const revelle_role_name = "Revelle";
@@ -129,6 +146,8 @@ module.exports = {
               message.channel.send(
                 "One of the IDs is incorrect. Please check again, now exiting."
               );
+              
+        
               return;
             }
           }
@@ -143,6 +162,22 @@ module.exports = {
         
       }
       
+      //check the validality of user. If it is null, exit the function.
+      if ((user === null || !user) && completed) {
+        
+        message.channel.send("There was a problem with the user ID. Please ensure you are not using the message ID, or try again using a mention instead. Deleting soon!").then(d_msg => {d_msg.delete({timeout : 15000})});
+        
+        info = collector.collected.array(); 
+           for(var i =0; i< info.length; i++){
+            info[i].delete({ timeout: 4000, reason: 'It had to be done.' }).catch(console.error);
+          }
+          //deletes the bots last message
+          client.user.lastMessage.delete({ timeout: 1000, reason: 'It had to be done.' }).catch(console.error);
+          
+        return;
+        
+      }
+      
       //begin clapping asses and adding nicknames
       if (completed) {
         var verified_name = info[1].toString().length;
@@ -150,11 +185,20 @@ module.exports = {
         var verified_college = info[3].toString().length;
 
         var count = verified_name + verified_major + verified_college + 6;
-
+  
+        //exit function due to nickname
         if (count > 29) {
           message.channel.send(
             "This nickname is either too long or will not have enough slots for the badges. Please retry the verify command."
           );
+          info = collector.collected.array(); 
+           for(var i =0; i< info.length; i++){
+            info[i].delete({ timeout: 4000, reason: 'It had to be done.' }).catch(console.error);
+          }
+          //deletes the bots last message
+          client.user.lastMessage.delete({ timeout: 1000, reason: 'It had to be done.' }).catch(console.error);
+          
+            return;
         } else {
           
 
@@ -219,7 +263,11 @@ module.exports = {
               class_name = class_other_role_name;
               break;
           }
-          
+          // Adding Functionality that checks if the inputted class is one of the following: "23", "24", "zoomer", "zoomie"
+          if (info[4].content.toLowerCase() === "24" || info[4].content.toLowerCase() === "zoomer" || info[4].content.toLowerCase() === "zoomie" || info[4].content.toLowerCase() === "younger"){
+            class_name = class_23_role_name;
+            roles.push(class_23_role);
+          }
           roles.push(verified_role);
 
           //verify role and set nickname
@@ -230,10 +278,12 @@ module.exports = {
               info[2].content +
               spacer +
               info[3].content
-          );
+          ).catch(console.error);
+          console.log("verify: done");
           //TODO A way to do confirmations would be nice
           message.channel.send(
-            "Verified: **" +
+              "<@"+ verifier +">" + 
+              " has verified: **" +
               info[1].content +
               spacer +
               info[2].content +
@@ -246,26 +296,32 @@ module.exports = {
               "**"
           );
           //keeping verify clean
-          
-          /*for(var i =0; i< info.length; i++){
-          
-             message.channel.cache.fetch(info[i].id)
-            .then(message => message.delete({ timeout: 2000, reason: 'It had to be done.' }))
-            .catch(console.error);
-            
+          //deletes the messages that were collected
+          info = collector.collected.array(); 
+           for(var i =0; i< info.length; i++){
+            info[i].delete({ timeout: 2000, reason: 'It had to be done.' }).catch(console.error);
           }
-           message.channel.cache.fetch(global.lastMessageID)
-            .then(message => message.delete({ timeout: 2000, reason: 'It had to be done.' }))
-            .catch(console.error);
-          */
+          //deletes the bots last message
+          client.user.lastMessage.delete({ timeout: 1000, reason: 'It had to be done.' }).catch(console.error);
+        
+          //Welcome Message 
           
-          //Welcome Message       
-          client.channels.cache.get("425873171431030786").send("***🎉🎉🎉  Welcome <@" + user.id + "> to our server!  🎉🎉🎉*** \n Please check out " 
+          const guild_id = "425866519650631680";
+          const guild = client.guilds.cache.get("425866519650631680");
+          var user_obj = guild.member(info[0]);
+          const welcome_embed = new Discord.MessageEmbed()
+            .setColor("ff4c4c")
+            .setTitle("***🎉🎉🎉  Welcome " + info[1].content + spacer + info[2].content + spacer + info[3].content + " to our server!  🎉🎉🎉***")
+            .setThumbnail(user_obj.user.displayAvatarURL);
+          
+          client.channels.cache.get("425873171431030786").send(welcome_embed);
+          
+          client.channels.cache.get("425873171431030786").send("***Hello <@" + user.id + "> !*** \n Please check out " 
                                                          + message.guild.channels.cache.find(channel => channel.name === "roles").toString() 
                                                          + " to get roles and introduce yourself in " 
-                                                         + message.guild.channels.cache.find(channel => channel.name === "profiles-usernames").toString() + "!" ); 
+                                                         + message.guild.channels.cache.find(channel => channel.name === "profiles").toString() + "!" ); 
         
-          
+                    
           //DM the user about roles
           const embed = new Discord.MessageEmbed()
             .setColor("ff4c4c")

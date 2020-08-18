@@ -1,6 +1,9 @@
 module.exports = {
-  name: "pointsInfo",
+  name: "pointsinfo",
   description: "Displays detailed points info!",
+  category: "Points",
+  args: false,
+  usage: '',
   execute(message, args, score) {
     var current_time = new Date().getTime();
     var last_msg = (current_time - score.last_msg) / 1000;

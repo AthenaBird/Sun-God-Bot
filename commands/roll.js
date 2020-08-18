@@ -1,7 +1,11 @@
+const SQLite = require("better-sqlite3");
+const sql_score = new SQLite("./databases/scores.sqlite");
+
 module.exports = {
 	name: 'roll',
-	description: 'Spend one point to possibly earn 5!',
-	execute(message, args, client, sql_score, score) {
+	description: 'Spend one point to possibly earn 5! **DEPRECATED**',
+	execute(message, args, score) {
+    const client = message.client;
     
     if (true) {
       message.channel.send("Removed due to spam issues >:(");

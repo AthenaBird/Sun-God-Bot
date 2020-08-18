@@ -3,6 +3,9 @@ const Discord = require("discord.js");
 module.exports = {
   name: "merch",
   description: "Find out about our merchandise!",
+  category: "Other",
+  args: false,
+  usage: '',
   execute(message, args) {
     const shop_embed = new Discord.MessageEmbed()
       .setColor("ff4c4c")

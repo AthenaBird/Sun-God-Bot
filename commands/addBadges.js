@@ -1,10 +1,17 @@
 const badges_json = require("../badges.json");
 const config = require("../config.json");
+const SQLite = require("better-sqlite3");
+const sql = new SQLite("./databases/badges.sqlite");
 
 module.exports = {
-  name: "addBadges",
+  name: "addbadges",
   description: "Gives users badges as admins",
-  execute(message, args, client, sql) {
+  aliases: ["addbadge"],
+  category: "Badges",
+  args: true,
+  usage: '<badge ID> <mentions/user IDs>',
+  execute(message, args) {
+    const client = message.client;
     //ADDBADGES function allows for the sql updating
     function addBadges(columnName, numberBadges, id) {
       const guild_id = "425866519650631680";
@@ -22,7 +29,7 @@ module.exports = {
 
     //GET USER function for getting ID
     function getUserID(mention) {
-      if (!mention) return;
+        if (!mention) return;
 
       if (mention.startsWith("<@") && mention.endsWith(">")) {
         mention = mention.slice(2, -1);
@@ -69,7 +76,7 @@ module.exports = {
           ' WHERE id = "' +
           id +
           '";';
-        console.log(statement);
+        console.log('badges: '+statement);
         client.addBadge = sql.prepare(statement);
         client.addBadge.run();
       }
