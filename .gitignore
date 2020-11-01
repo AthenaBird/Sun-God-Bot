@@ -1,0 +1,7 @@
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+owo.txt
+config.json
+.env
+*.log

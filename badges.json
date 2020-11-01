@@ -1,0 +1,315 @@
+{
+  "one_star": {
+    "name": "Event Badge--1",
+    "emoji": "⭐",
+    "description": "Attended an IRL discord event.",
+    "type": "event",
+    "levelable": true,
+    "next": "three_star",
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "three_star": {
+    "name": "Event Badge--3",
+    "emoji": "🌟",
+    "description": "Attended 3 IRL discord events.",
+    "type": "event",
+    "levelable": false,
+    "parent": "one_star",
+    "next": "five_star",
+    "level": 3,
+    "rarity": "Uncommon"
+  },
+
+  "five_star": {
+    "name": "Event Badge--5",
+    "emoji": "✨",
+    "description": "Attended 5 IRL discord events.",
+    "type": "event",
+    "levelable": false,
+    "parent": "one_star",
+    "next": "eight_star",
+    "level": 5,
+    "rarity": "Rare"
+  },
+
+  "eight_star": {
+    "name": "Event Badge--8",
+    "emoji": "💫",
+    "description": "Attended 8 IRL discord events.",
+    "type": "event",
+    "levelable": false,
+    "parent": "one_star",
+    "level": 8,
+    "rarity": "Epic"
+  },
+
+  "spring_qtr_survey": {
+    "name": "Spring Quarter 2019 Survey Participant",
+    "emoji": "🍀",
+    "description": "Filled out the spring quarter 2019 survey.",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "fall_qtr_survey": {
+    "name": "Fall Quarter 2019 Survey Participant",
+    "emoji": "🍂",
+    "description": "Filled out the fall quarter 2019 survey.",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "game_winner": {
+    "name": "Discord Game Winner",
+    "emoji": "🎮",
+    "description": "Won or placed in an official game hosted by this discord",
+    "type": "award",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Uncommon"
+  },
+
+  "subscriber": {
+    "name": "Subscriber",
+    "emoji": "👾",
+    "description": "Is subscribed to this discord",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "study_jam_1": {
+    "name": "Study Jam--1",
+    "emoji": "📖",
+    "description": "Attended a discord study jam",
+    "type": "participant",
+    "levelable": true,
+    "next": "study_jam_3",
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "study_jam_3": {
+    "name": "Study Jam--3",
+    "emoji": "📚",
+    "description": "Attended three discord study jams",
+    "type": "participant",
+    "levelable": false,
+    "level": 2,
+    "parent": "study_jam_1",
+    "rarity": "Common"
+  },
+
+  "bonfire": {
+    "name": "Joint Bonfire 2019",
+    "emoji": "🔥",
+    "description": "Attended the joint 22-23 bonfire",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "meme_winner": {
+    "name": "Meme Contest Winner",
+    "emoji": "😂",
+    "description": "Won a themed meme contest",
+    "type": "award",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Rare"
+  },
+
+  "summer_kickoff_call": {
+    "name": "Summer Kickoff Call",
+    "emoji": "🌅",
+    "description": "Joined the summer kickoff discord call",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Uncommon"
+  },
+
+  "streamer_1": {
+    "name": "Official Discord Streamer--1",
+    "emoji": "📹",
+    "description": "Streamed officially once through our discord",
+    "type": "participant",
+    "levelable": true,
+    "level": 1,
+    "rarity": "Uncommon"
+  },
+
+  "streamer_3": {
+    "name": "Official Discord Streamer--3",
+    "emoji": "🎥",
+    "description": "Streamed officially once through our discord three times",
+    "type": "participant",
+    "levelable": false,
+    "level": 2,
+    "parent": "streamer_1",
+    "rarity": "Rare"
+  },
+
+  "artist": {
+    "name": "Discord Artist",
+    "emoji": "🎨",
+    "description": "Contributed artistically to our discord",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Rare"
+  },
+
+  "bot_contributor": {
+    "name": "Bot Contributor",
+    "emoji": "🤖",
+    "description": "Helped/contributed to the development of either resident bots",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Legendary"
+  },
+
+  "nitro_booster": {
+    "name": "Nitro Booster",
+    "emoji": "💎",
+    "description": "Boosted our humble server!",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Legendary"
+  },
+
+  "merch_supporter": {
+    "name": "Merch Supporter",
+    "emoji": "💸",
+    "description": "Supported the discord by buying merch!",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Epic"
+  },
+
+  "informal_meetup_1": {
+    "name": "Informal Meetup Participant--1",
+    "emoji": "🌙",
+    "description": "Went to an informal meetup with a musuem picture for proof",
+    "type": "participant",
+    "levelable": true,
+    "next": "informal_meetup_3",
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "informal_meetup_3": {
+    "name": "Informal Meetup Participant--3",
+    "emoji": "🌕",
+    "description": "Went to three informal meetups with a musuem picture for proof",
+    "type": "participant",
+    "levelable": false,
+    "previous": "informal_meetup_1",
+    "level": 2,
+    "rarity": "Uncommon"
+  },
+  
+  "meetup_cook": {
+    "name": "Meetup Cook",
+    "emoji": "🍳",
+    "description": "Cooked, baked, or prepared food of any kind during a meetup",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Epic"
+  }, 
+  
+  "happy_holidays": {
+    "name": "Happy Holidays!",
+    "emoji": "🎄",
+    "description": "Happy holidays! Have a fantastic winter break :)",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "happy_lny": {
+    "name": "Happy Lunar New Year!",
+    "emoji": "🏮",
+    "description": "Happy Lunar New Year!",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "ice_skating": {
+    "name": "Ice Skating Fundraiser",
+    "emoji": "⛸️",
+    "description": "Attended our ice skating fundraiser",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Epic"
+  },
+  
+  "happy_2nd_bday": {
+    "name": "UCSD 22's 2nd Birthday!",
+    "emoji": "🎉",
+    "description": "Celebrated the server turning 2 years old!",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "april_fools": {
+    "name": "April Fools!",
+    "emoji": "🃏",
+    "description": "Watched our server turn into chaos.",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "movie_night": {
+    "name": "Movie Night!",
+    "emoji": "🍿",
+    "description": "Joined for a movie night!",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "one_thousand": {
+    "name": "1k Members!",
+    "emoji": "💯",
+    "description": "Was here for our 1k member celebration.",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  }, 
+
+  "giveaway": {
+    "name": "Giver-away",
+    "emoji": "🎁",
+    "description": "Gave something away through our giveways",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Legendary"
+  }
+  
+  
+  
+}
