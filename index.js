@@ -353,7 +353,6 @@ client.on("message", message => {
   }
 
 
-
   // //now for the commands
   // if (command === "help") {
   //   client.commands.get("help").execute(message, args);
