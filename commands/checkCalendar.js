@@ -111,29 +111,29 @@ module.exports = {
       var e_time = new Date(item.end_time);
             
       var c_time = new Date();
-      if (c_time.getTime() - 28800000 > item.start_time) {
-        //event has passed
-        fs.appendFileSync('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event passed: " + item.id + " " + item.name + "\n");
-        continue;
+      if (c_time.getTime() - 25200000 > item.start_time) {
+        // //event has passed
+        // fs.appendFileSync('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event passed: " + item.id + " " + item.name + "\n");
+        // continue;
       } 
-      else if (item.start_time - (c_time.getTime() - 28800000) > EVENT_WINDOW){
+      else if (item.start_time - (c_time.getTime() - 25200000) > EVENT_WINDOW){
         //greater than 24 hours
-        fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event notification window too far: " + item.id + " " + item.name + "\n", function (err) {
-          if (err) throw err;
-        }); 
-        continue;
+        // fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event notification window too far: " + item.id + " " + item.name + "\n", function (err) {
+        //   if (err) throw err;
+        // }); 
+        // continue;
       } 
       else if (item.notify !== 1) {
-        fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event notifications are off: " + item.id + " " + item.name + " " + item.notify + "\n", function (err) {
-          if (err) throw err;
-        }); 
-        continue;
+        // fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " Event notifications are off: " + item.id + " " + item.name + " " + item.notify + "\n", function (err) {
+        //   if (err) throw err;
+        // }); 
+        // continue;
       } 
       else {
 
-        fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " NOTIFYING USERS: " + item.id + " " + item.name + "\n", function (err) {
+/*         fs.appendFile('/home/ubuntu/SunGod/commands/checkCalendar.txt', datetime + " NOTIFYING USERS: " + item.id + " " + item.name + "\n", function (err) {
           if (err) throw err;
-        }); 
+        });  */
 
         console.log();
         

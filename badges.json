@@ -308,8 +308,16 @@
     "levelable": false,
     "level": 1,
     "rarity": "Legendary"
+  },
+  "halloween": {
+    "name": "Happy Halloween!",
+    "emoji": "🎃",
+    "description": "Trick or Treated in our server",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
   }
-  
   
   
 }

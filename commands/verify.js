@@ -32,7 +32,7 @@ module.exports = {
       return;
     } 
     
-    if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️"))) {
+    if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️") || message.member.roles.cache.find(r => r.name === "Moderators 📅"))) {
       message.channel.send("You are not authorized to use this command! Please hold tight as a moderator will verify you soon.");
       return;
     }

@@ -5,4 +5,4 @@ owo.txt
 config.json
 .env
 *.log
-checkCalendar.txt
+commands/checkCalendar.txt
