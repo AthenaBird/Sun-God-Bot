@@ -2,7 +2,7 @@
 *.sqlite-shm
 *.sqlite-wal
 owo.txt
-config.jsong
+config.json
 .env
 *.log
 commands/checkCalendar.txt
