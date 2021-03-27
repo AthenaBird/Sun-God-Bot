@@ -45,7 +45,7 @@ module.exports = {
     });
    
     //store the message ID to be deleted later
-    message.reply("Please send in the following order (seperate messages): mention the user/the user ID, name, major, college, and class (`22`, `23`, or `older`). Type cancel to cancel the action.")
+    message.reply("Please send in the following order (seperate messages): mention the user/the user ID, name, major, college, and class (`22`, `23`, `24`, `25`, or `older`). Type cancel to cancel the action.")
       .then(sent => { // 'sent' is that message you just sent
       sent = client.user.lastMessage;
       //console.log(client.user.lastMessageID);
@@ -92,9 +92,12 @@ module.exports = {
       const warren_role_name = "Warren";
       const erc_role_name = "ERC";
       const sixth_role_name = "Sixth";
+      const seventh_role_name = "Seventh";
       const nonUCSD_role_name = "Non UCSD";
       const class_22_role_name = "22";
       const class_23_role_name = "23";
+      const class_24_role_name = "24";
+      const class_25_role_name = "25";
       const class_older_role_name = "older";
       const class_other_role_name = "assumed 22";
 
@@ -111,11 +114,18 @@ module.exports = {
       );
       let erc_role = message.guild.roles.cache.find(role => role.name === "ERC");
       let sixth_role = message.guild.roles.cache.find(role => role.name === "Sixth");
+      let seventh_role = message.guild.roles.cache.find(role => role.name === "Seventh");
       let nonUCSD_role = message.guild.roles.cache.find(
         role => role.name === "Non UCSD"
       );
       let class_23_role = message.guild.roles.cache.find(
         role => role.name === "Zoomies"
+      );
+      let class_24_role = message.guild.roles.cache.find(
+        role => role.name === "Zoomies^2"
+      );
+      let class_25_role = message.guild.roles.cache.find(
+        role => role.name === "Zoomies^3"
       );
       let class_older_role = message.guild.roles.cache.find(
         role => role.name === "Boomies"
@@ -235,6 +245,11 @@ module.exports = {
               college_name = sixth_role_name;
               roles.push(sixth_role);
               break;
+            case seventh_role_name.toLowerCase():
+              //member.addRole(sixth_role).catch(console.error);
+              college_name = seventh_role_name;
+              roles.push(seventh_role);
+              break;
             default:
               //member.addRole(nonUCSD_role).catch(console.error);
               college_name = nonUCSD_role_name;
@@ -253,6 +268,18 @@ module.exports = {
               class_name = class_23_role_name;
               roles.push(class_23_role);
               break;
+            case class_24_role_name.toLowerCase():
+              //member.addRole(class_23_role).catch(console.error);
+              class_name = class_24_role_name;
+              roles.push(class_24_role);
+              roles.push(class_23_role);
+              break;
+            case class_25_role_name.toLowerCase():
+              //member.addRole(class_23_role).catch(console.error);
+              class_name = class_25_role_name;
+              roles.push(class_25_role);
+              roles.push(class_23_role);
+              break;
             case class_older_role_name.toLowerCase():
               //member.addRole(class_older_role).catch(console.error);
               class_name = class_older_role_name;
@@ -262,11 +289,6 @@ module.exports = {
               // No class role given
               class_name = class_other_role_name;
               break;
-          }
-          // Adding Functionality that checks if the inputted class is one of the following: "23", "24", "zoomer", "zoomie"
-          if (info[4].content.toLowerCase() === "24" || info[4].content.toLowerCase() === "zoomer" || info[4].content.toLowerCase() === "zoomie" || info[4].content.toLowerCase() === "younger"){
-            class_name = class_23_role_name;
-            roles.push(class_23_role);
           }
           roles.push(verified_role);
 

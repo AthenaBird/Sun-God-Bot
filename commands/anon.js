@@ -12,9 +12,9 @@ module.exports = {
 
     const client = message.client;
     
-    var id_multiplier = 531;
+    var id_multiplier = 691;
     var id = parseFloat(message.author.id);
-    var anon_id = (id_multiplier * id).toString().substring(12, 15);
+    var anon_id = (id_multiplier * id).toString().substring(11, 14);
     var words = "> `User " + anon_id+ "` : ";
     for(var i = 0; i < args.length; i++) {
       words += args[i] + " ";
