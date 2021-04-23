@@ -6,13 +6,13 @@ module.exports = {
   usage: '<your message>',
 	execute(message, args) {
 
-    if (message.author.id === "252670263848599563") {
+    /* if (message.author.id === "252670263848599563") {
       return;
-    }
+    } */
 
     const client = message.client;
     
-    var id_multiplier = 691;
+    var id_multiplier = 377;
     var id = parseFloat(message.author.id);
     var anon_id = (id_multiplier * id).toString().substring(11, 14);
     var words = "> `User " + anon_id+ "` : ";
