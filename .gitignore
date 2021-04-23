@@ -6,3 +6,4 @@ config.json
 .env
 *.log
 commands/checkCalendar.txt
+commands/anon.js
