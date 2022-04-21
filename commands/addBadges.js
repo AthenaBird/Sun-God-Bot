@@ -87,7 +87,7 @@ module.exports = {
     var badge_to_add;
 
     //Conditions for command to work
-    if (message.author.id !== config.ownerID) {
+    if(!(message.member.roles.cache.find(r => r.name === "Kages 👑") || message.member.roles.cache.find(r => r.name === "Moderators 🛡️"))) {
       message.channel.send("You are not authorized to use this command.");
       return;
     } else if (!args.length) {

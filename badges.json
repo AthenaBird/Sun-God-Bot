@@ -317,7 +317,116 @@
     "levelable": false,
     "level": 1,
     "rarity": "Common"
+  },
+
+  "speed_friending": {
+    "name": "Speed Friending Event",
+    "emoji": "💬",
+    "description": "Participated in speed friending event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "hot_seat": {
+    "name": "Hot Seat Event",
+    "emoji": "🪑",
+    "description": "Participated in hot seat event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "ylyl": {
+    "name": "YLYL Event",
+    "emoji": "🤣",
+    "description": "Participated in you laugh you lose event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "music_event": {
+    "name": "Music Event",
+    "emoji": "🎵",
+    "description": "Participated in any music event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+
+  "random_presentation": {
+    "name": "Random Presentation Event",
+    "emoji": "❓",
+    "description": "Participated in random presentation night event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "one_thousand_donor": {
+    "name": "1k Donor",
+    "emoji": "💰",
+    "description": "Donated to our 1k member giveaways",
+    "type": "gratitude",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Rare"
+  },
+
+  "2020_welcome_week": {
+    "name": "2020 Welcome Week Event",
+    "emoji": "❓",
+    "description": "Participated in 2020 welcome week event",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Uncommon"
+  },
+
+  "spotlight": {
+    "name": "Spotlight Member",
+    "emoji": "🔆",
+    "description": "Was a spotlight member",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Uncommon"
+  },
+
+  "rave_dj": {
+    "name": "Rave DJ",
+    "emoji": "🎧",
+    "description": "Was a rave DJ",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Epic"
+  },
+
+  "game_night": {
+    "name": "Game Night Event",
+    "emoji": "🎲",
+    "description": "Participated in game night",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
+  },
+  
+  "movie_night": {
+    "name": "Movie Night Event",
+    "emoji": "📺",
+    "description": "Participated in movie night",
+    "type": "participant",
+    "levelable": false,
+    "level": 1,
+    "rarity": "Common"
   }
-  
-  
 }
+
